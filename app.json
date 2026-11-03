@@ -25,6 +25,13 @@
     },
     "plugins": [
       "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Vocabula photographs your learning material.",
+          "photosPermission": "Vocabula selects learning material from your photo library."
+        }
+      ],
       "expo-router"
     ]
   }
