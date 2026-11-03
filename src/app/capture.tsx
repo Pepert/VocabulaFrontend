@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -11,9 +11,26 @@ type Phase =
   | { step: 'done'; story: GeneratedStory }
   | { step: 'error'; message: string };
 
+type CameraPermission = {
+  status: ImagePicker.PermissionStatus;
+  canAskAgain: boolean;
+} | null;
+
 export default function CaptureScreen() {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>({ step: 'pick' });
+  const [cameraPermission, setCameraPermission] = useState<CameraPermission>(null);
+
+  useEffect(() => {
+    ImagePicker.getCameraPermissionsAsync().then((p) =>
+      setCameraPermission({ status: p.status, canAskAgain: p.canAskAgain })
+    );
+  }, []);
+
+  const requestCameraPermission = async () => {
+    const p = await ImagePicker.requestCameraPermissionsAsync();
+    setCameraPermission({ status: p.status, canAskAgain: p.canAskAgain });
+  };
 
   const addMaterial = async (source: 'camera' | 'library') => {
     try {
@@ -56,6 +73,14 @@ export default function CaptureScreen() {
           <View style={styles.buttons}>
             <Button title="Take a photo" onPress={() => addMaterial('camera')} />
             <Button title="Choose from library" onPress={() => addMaterial('library')} />
+          </View>
+          {/* Temporary diagnostics: what does iOS actually report for the camera permission? */}
+          <View style={styles.diagnostics}>
+            <Text style={styles.muted}>
+              Camera permission: {cameraPermission ? cameraPermission.status : 'loading…'} (can ask again:{' '}
+              {cameraPermission ? String(cameraPermission.canAskAgain) : '…'})
+            </Text>
+            <Button title="Request camera permission" onPress={requestCameraPermission} />
           </View>
         </>
       )}
@@ -121,5 +146,10 @@ const styles = StyleSheet.create({
   error: {
     color: '#b00020',
     textAlign: 'center',
+  },
+  diagnostics: {
+    marginTop: 24,
+    alignItems: 'center',
+    gap: 8,
   },
 });
