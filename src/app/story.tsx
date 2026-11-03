@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Button, FlatList, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { getChapters, type StoryChapter } from '../api';
 
 export default function StoryScreen() {
+  const router = useRouter();
   const [chapters, setChapters] = useState<StoryChapter[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [openChapter, setOpenChapter] = useState<number | null>(null);
@@ -35,7 +37,12 @@ export default function StoryScreen() {
       contentContainerStyle={styles.content}
       data={chapters}
       keyExtractor={(chapter) => String(chapter.chapterNumber)}
-      ListHeaderComponent={<Text style={styles.title}>Your story</Text>}
+      ListHeaderComponent={
+        <View style={styles.header}>
+          <Button title="‹ Home" onPress={() => router.back()} />
+          <Text style={styles.title}>Your story</Text>
+        </View>
+      }
       ListEmptyComponent={<Text style={styles.muted}>No chapters yet.</Text>}
       renderItem={({ item }) => (
         <View style={styles.chapter}>
@@ -69,6 +76,10 @@ const styles = StyleSheet.create({
   content: {
     padding: 24,
     gap: 8,
+  },
+  header: {
+    marginBottom: 16,
+    alignItems: 'flex-start',
   },
   title: {
     fontSize: 28,
