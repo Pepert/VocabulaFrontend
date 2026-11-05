@@ -4,14 +4,17 @@
  * these tokens instead of hard-coded values.
  */
 import { TextStyle, ViewStyle } from 'react-native';
-import { Nunito_400Regular, Nunito_700Bold, Nunito_800ExtraBold, Nunito_900Black } from '@expo-google-fonts/nunito';
 
-/** Fonts exposed by the root layout's useFonts loader (registry values are the font family names). */
+/**
+ * Registered font family names. The font FILES are loaded in the root
+ * layout from @expo-google-fonts/nunito; these strings are the family
+ * names that loading registers for use in styles.
+ */
 export const FONTS: Record<FontWeight, string> = {
-  400: String(Nunito_400Regular),
-  700: String(Nunito_700Bold),
-  800: String(Nunito_800ExtraBold),
-  900: String(Nunito_900Black),
+  400: 'Nunito_400Regular',
+  700: 'Nunito_700Bold',
+  800: 'Nunito_800ExtraBold',
+  900: 'Nunito_900Black',
 };
 
 export type FontWeight = 400 | 700 | 800 | 900;
