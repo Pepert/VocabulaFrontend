@@ -65,7 +65,7 @@ export default function ChaptersScreen() {
         >
           <View style={styles.rowText}>
             <Text style={styles.chapterTitle}>
-              Chapter {item.chapterNumber} · {item.storyTitle}
+              Chapter {item.chapterNumber} · {item.title ?? item.storyTitle}
             </Text>
             <Text style={styles.muted}>{new Date(item.createdAt).toLocaleDateString()}</Text>
           </View>

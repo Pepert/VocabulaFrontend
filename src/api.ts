@@ -38,6 +38,8 @@ export type GeneratedStory = {
 export type StoryChapter = {
   chapterNumber: number;
   storyTitle: string;
+  /** Per-chapter title; absent on chapters written before it existed. */
+  title?: string;
   content: string;
   createdAt: string;
 };
