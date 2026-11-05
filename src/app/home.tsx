@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { COGNITO, logoutUrl } from '../config';
 import { clearSession } from '../auth';
 import { getChapters, ApiError, type StoryChapter } from '../api';
+import PrimaryButton, { Card } from '../components/PrimaryButton';
+import { colors, spacing, typography } from '../theme';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -33,30 +35,46 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Your story</Text>
+
       {error ? (
         <Text style={styles.error}>Could not load your chapters: {error}</Text>
       ) : chapters === null ? (
-        <ActivityIndicator />
+        <ActivityIndicator color={colors.blue} />
       ) : chapters.length === 0 ? (
-        <Text style={styles.muted}>No chapters yet. Add learning material to start your story.</Text>
+        <Card style={styles.card}>
+          <Text style={styles.cardTitle}>A story awaits 📖</Text>
+          <Text style={styles.cardText}>
+            Photograph a page of your notebook, and the first chapter of your story writes itself
+            with the words you are learning.
+          </Text>
+        </Card>
       ) : (
-        <Text style={styles.muted}>
-          {chapters.length} chapter{chapters.length === 1 ? '' : 's'} so far — the next one continues where the story
-          left off.
-        </Text>
+        <Card style={styles.card}>
+          <Text style={styles.cardTitle}>{chapters.length > 0 && `Chapter ${chapters.length}`}</Text>
+          <Text style={styles.cardText}>
+            {chapters.length === 1
+              ? 'One chapter written so far. New pages keep the story going.'
+              : `${chapters.length} chapters written so far. New pages keep the story going.`}
+          </Text>
+        </Card>
       )}
 
-      <View style={styles.buttons}>
-        <Button title="Add resources" onPress={() => router.push('/capture')} disabled={chapters === null} />
-        <Button
+      <View style={styles.actions}>
+        <PrimaryButton
+          title="Add resources"
+          disabled={chapters === null}
+          onPress={() => router.push('/capture')}
+        />
+        <PrimaryButton
           title="Chapters"
-          onPress={() => router.push('/chapters')}
+          variant="blue"
           disabled={!chapters || chapters.length === 0}
+          onPress={() => router.push('/chapters')}
         />
       </View>
 
       <View style={styles.footer}>
-        <Button title="Sign out" onPress={signOut} />
+        <PrimaryButton title="Sign out" variant="ghost" onPress={signOut} />
       </View>
     </View>
   );
@@ -65,30 +83,40 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.surfaceAlt,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
-    gap: 8,
+    padding: spacing.l,
+    gap: spacing.s,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    ...typography.h1,
   },
-  muted: {
-    color: '#555',
-    textAlign: 'center',
+  card: {
+    marginTop: spacing.l,
+    width: '100%',
+    maxWidth: 360,
   },
-  buttons: {
-    marginTop: 32,
-    width: 240,
-    gap: 12,
+  cardTitle: {
+    ...typography.h2,
+  },
+  cardText: {
+    ...typography.bodyMuted,
+    marginTop: spacing.xs,
+  },
+  actions: {
+    marginTop: spacing.xl,
+    width: '100%',
+    maxWidth: 360,
+    gap: spacing.m,
   },
   footer: {
     position: 'absolute',
-    bottom: 48,
+    bottom: spacing.xxl,
   },
   error: {
-    color: '#b00020',
+    ...typography.bodyMuted,
+    color: colors.red,
+    textAlign: 'center',
   },
 });

@@ -32,7 +32,9 @@
           "photosPermission": "Vocabula selects learning material from your photo library."
         }
       ],
-      "expo-router"
+      "expo-router",
+      "expo-font",
+      "expo-splash-screen"
     ]
   }
 }
