@@ -5,7 +5,7 @@ import {
   loadSession,
   saveSession,
 } from '../auth';
-import { apiFetch, ApiError, getChapters } from '../api';
+import { apiFetch, ApiError, extractKnowledge, getChapters } from '../api';
 
 jest.mock('expo-secure-store', () => ({
   __esModule: true,
@@ -35,7 +35,9 @@ jest.mock('expo/fetch', () => ({
 
 jest.mock('expo-file-system', () => ({
   __esModule: true,
-  File: jest.fn((uri: string) => ({ uri })),
+  // A real Blob instance, so the spec-compliant FormData (active in the
+  // Node test environment) accepts it as a part, same as File at runtime.
+  File: jest.fn((uri: string) => new Blob(['image-bytes'], { type: 'image/jpeg' })),
 }));
 
 // refreshAccessToken uses the global fetch (Cognito token endpoint).
@@ -105,6 +107,24 @@ describe('apiFetch', () => {
   });
 });
 
+describe('extractKnowledge', () => {
+  it('sends every image as an Images form field in one request', async () => {
+    await saveSession({ accessToken: 'token' });
+    (expoFetch as jest.Mock).mockResolvedValue(okResponse({ targetLanguage: 'sv' }));
+
+    await extractKnowledge(
+      ['file:///tmp/page1.jpg', 'file:///tmp/page2.jpg', 'file:///tmp/page3.jpg'],
+      'image/jpeg'
+    );
+
+    expect((expoFetch as jest.Mock)).toHaveBeenCalledTimes(1);
+    const [url, init] = (expoFetch as jest.Mock).mock.calls[0];
+    expect(url).toContain('/api/knowledge/extract');
+    expect(init.headers.Authorization).toBe('Bearer token');
+    expect((init.body as FormData).getAll('Images')).toHaveLength(3);
+  });
+});
+
 describe('getChapters', () => {
   it('returns the parsed chapters', async () => {
     await saveSession({ accessToken: 'token' });
@@ -134,7 +154,7 @@ describe('getChapters', () => {
       okResponse({ title: 'Daily limit', detail: 'Come back tomorrow.' }, 429)
     );
 
-    await expect(getChapters()).rejects.toThrow('Daily limit');
+    await expect(getChapters()).rejects.toThrow('Come back tomorrow.');
     await expect(getChapters()).rejects.toHaveProperty('status', 429);
   });
 });

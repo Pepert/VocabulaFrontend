@@ -129,19 +129,30 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
 async function apiJson<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await apiFetch(path, init);
   if (!response.ok) {
-    const detail = await response.text().catch(() => '');
-    throw new ApiError(response.status, detail || `HTTP ${response.status}`);
+    const raw = await response.text().catch(() => '');
+    // The API answers errors as RFC 7807 problem details; prefer the
+    // human-readable fields over the raw JSON.
+    let message = raw || `HTTP ${response.status}`;
+    try {
+      const problem = JSON.parse(raw) as { title?: string; detail?: string };
+      message = problem.detail ?? problem.title ?? message;
+    } catch {
+      // raw body was not JSON; keep it as is
+    }
+    throw new ApiError(response.status, message);
   }
   return (await response.json()) as T;
 }
 
-/** Extract vocabulary and grammar from a notebook photo. */
-export async function extractKnowledge(imageUri: string, mediaType: string): Promise<NotebookKnowledge> {
+/** Extract vocabulary and grammar from up to 10 notebook photos. */
+export async function extractKnowledge(imageUris: string[], mediaType: string): Promise<NotebookKnowledge> {
   // The Expo fetch requires File parts (the legacy { uri } FormData part
   // is not supported by the spec-compliant implementation).
-  const file = new File(imageUri.startsWith('file://') ? imageUri : `file://${imageUri}`);
   const form = new FormData();
-  form.append('Image', file, `notebook.${mediaType === 'image/png' ? 'png' : 'jpg'}`);
+  for (const uri of imageUris) {
+    const file = new File(uri.startsWith('file://') ? uri : `file://${uri}`);
+    form.append('Images', file, `notebook.${mediaType === 'image/png' ? 'png' : 'jpg'}`);
+  }
 
   return apiJson<NotebookKnowledge>('/api/knowledge/extract', {
     method: 'POST',

@@ -5,6 +5,9 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { extractKnowledge, generateChapter, type GeneratedStory, ApiError } from '../api';
 
+/** Must match the backend's per-upload limit. */
+const MaxImagesPerUpload = 10;
+
 type Phase =
   | { step: 'pick' }
   | { step: 'working'; label: string }
@@ -32,25 +35,51 @@ export default function CaptureScreen() {
         }
       }
 
+      const pickerOptions: ImagePicker.ImagePickerOptions = { mediaTypes: ['images'], quality: 0.9 };
       const result =
         source === 'camera'
-          ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.9 })
-          : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.9 });
+          ? await ImagePicker.launchCameraAsync(pickerOptions)
+          : await ImagePicker.launchImageLibraryAsync({
+              ...pickerOptions,
+              allowsMultipleSelection: true,
+              selectionLimit: MaxImagesPerUpload,
+            });
 
-      if (result.canceled || !result.assets[0]) {
+      if (result.canceled || result.assets.length === 0) {
         return;
       }
 
-      // iPhones store photos as HEIC; the API accepts jpeg/png/webp.
-      // Convert to JPEG before uploading.
-      setPhase({ step: 'working', label: 'Preparing photo…' });
-      const prepared = await ImageManipulator.manipulateAsync(result.assets[0].uri, [], {
-        format: ImageManipulator.SaveFormat.JPEG,
-        compress: 0.85,
-      });
+      const pickedImages = result.assets.slice(0, MaxImagesPerUpload);
 
-      setPhase({ step: 'working', label: 'Reading your notebook…' });
-      const knowledge = await extractKnowledge(prepared.uri, 'image/jpeg');
+      // iPhones store photos as HEIC; the API accepts jpeg/png/webp.
+      // Convert every page to JPEG before uploading.
+      setPhase({
+        step: 'working',
+        label:
+          pickedImages.length === 1
+            ? 'Preparing photo…'
+            : `Preparing ${pickedImages.length} photos…`,
+      });
+      const prepared = await Promise.all(
+        pickedImages.map((asset) =>
+          ImageManipulator.manipulateAsync(asset.uri, [], {
+            format: ImageManipulator.SaveFormat.JPEG,
+            compress: 0.85,
+          })
+        )
+      );
+
+      setPhase({
+        step: 'working',
+        label:
+          pickedImages.length === 1
+            ? 'Reading your notebook…'
+            : `Reading ${pickedImages.length} notebook pages…`,
+      });
+      const knowledge = await extractKnowledge(
+        prepared.map((p) => p.uri),
+        'image/jpeg'
+      );
 
       setPhase({ step: 'working', label: 'Writing your next chapter…' });
       const story = await generateChapter(knowledge);
