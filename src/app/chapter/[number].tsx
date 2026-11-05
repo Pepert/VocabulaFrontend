@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getChapters, ApiError, type StoryChapter } from '../../api';
 import PrimaryButton from '../../components/PrimaryButton';
 import { colors, fontFamily, radius, spacing, typography } from '../../theme';
@@ -8,6 +9,7 @@ import { colors, fontFamily, radius, spacing, typography } from '../../theme';
 /** Reading page for a single chapter, routed as /chapter/[number]. */
 export default function ChapterScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { number } = useLocalSearchParams<{ number: string }>();
   const chapterNumber = Number(number);
   // undefined = still loading, null = chapter not found.
@@ -44,7 +46,7 @@ export default function ChapterScreen() {
   }
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.s }]}>
       <PrimaryButton title="‹ Chapters" variant="ghost" onPress={() => router.back()} />
 
       <View style={styles.pill}>

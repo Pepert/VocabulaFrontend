@@ -39,6 +39,9 @@ export const colors = {
   text: '#3C3C3C',
   textMuted: '#8F8F8F',
   border: '#E5E5E5',
+  //** Soft green-tinted screen background (white cards float on it). */
+  surfaceTint: '#EFF7E6',
+  //** Grey alternative for subtle separators. */
   surfaceAlt: '#F7F7F7',
   /** Locked/disabled buttons. */
   lockedBg: '#E5E5E5',

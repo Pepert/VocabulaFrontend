@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as WebBrowser from 'expo-web-browser';
 import { COGNITO, logoutUrl } from '../config';
 import { clearSession } from '../auth';
@@ -10,6 +11,7 @@ import { colors, spacing, typography } from '../theme';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [chapters, setChapters] = useState<StoryChapter[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -73,7 +75,7 @@ export default function HomeScreen() {
         />
       </View>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { marginBottom: insets.bottom + spacing.m }]}>
         <PrimaryButton title="Sign out" variant="ghost" onPress={signOut} />
       </View>
     </View>
@@ -83,7 +85,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.surfaceAlt,
+    backgroundColor: colors.surfaceTint,
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing.l,

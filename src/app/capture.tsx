@@ -144,7 +144,7 @@ export default function CaptureScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.surfaceAlt,
+    backgroundColor: colors.surfaceTint,
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing.l,

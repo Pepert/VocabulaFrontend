@@ -31,7 +31,8 @@ sizes or fonts.
 | `text` | `#3C3C3C` | Primary text |
 | `textMuted` | `#8F8F8F` | Secondary text |
 | `border` | `#E5E5E5` | Card and divider borders |
-| `surfaceAlt` | `#F7F7F7` | Screen background behind white cards |
+| `surfaceTint` | `#EFF7E6` | Screen background - soft green tint, white cards float on it |
+| `surfaceAlt` | `#F7F7F7` | Grey alternative for subtle separates |
 | `lockedBg/Edge/Text` | `#E5E5E5` / `#D6D6D6` / `#AFAFAF` | Disabled buttons |
 
 ## Typography

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getChapters, ApiError, type StoryChapter } from '../api';
 import PrimaryButton from '../components/PrimaryButton';
 import { colors, spacing, typography } from '../theme';
 
 export default function ChaptersScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [chapters, setChapters] = useState<StoryChapter[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,7 +44,7 @@ export default function ChaptersScreen() {
   return (
     <FlatList
       style={styles.list}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.s }]}
       data={chapters}
       keyExtractor={(chapter) => String(chapter.chapterNumber)}
       ListHeaderComponent={
@@ -77,18 +79,18 @@ export default function ChaptersScreen() {
 const styles = StyleSheet.create({
   centered: {
     flex: 1,
-    backgroundColor: colors.surfaceAlt,
+    backgroundColor: colors.surfaceTint,
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing.l,
   },
   list: {
     flex: 1,
-    backgroundColor: colors.surfaceAlt,
+    backgroundColor: colors.surfaceTint,
   },
   content: {
     padding: spacing.l,
-    paddingBottom: spacing.xxl,
+    paddingBottom: spacing.xxl + spacing.s,
   },
   header: {
     marginBottom: spacing.m,
