@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
 import { buttonStyles, colors, radius, spacing, type ButtonVariant } from '../theme';
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
   onPress: () => void;
   variant?: ButtonVariant;
   disabled?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 };
 
 /**

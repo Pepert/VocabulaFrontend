@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { extractKnowledge, generateChapter, getChapters, ApiError } from '../api';
@@ -17,6 +18,7 @@ type Phase =
 
 export default function CaptureScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [phase, setPhase] = useState<Phase>({ step: 'pick' });
 
   const addMaterial = async (source: 'camera' | 'library') => {
@@ -103,9 +105,17 @@ export default function CaptureScreen() {
 
   return (
     <View style={styles.container}>
+      {phase.step !== 'working' && (
+        <PrimaryButton
+          title="‹ Home"
+          variant="ghost"
+          onPress={() => router.back()}
+          style={[styles.back, { marginTop: insets.top + spacing.s }]}
+        />
+      )}
+
       {phase.step === 'pick' && (
-        <>
-          <PrimaryButton title="‹ Home" variant="ghost" onPress={() => router.back()} style={styles.back} />
+        <View style={styles.centered}>
           <Text style={styles.title}>Add learning material</Text>
           <Text style={styles.muted}>
             Photograph a notebook page; the next chapter of your story uses what it finds.
@@ -118,7 +128,7 @@ export default function CaptureScreen() {
               onPress={() => addMaterial('library')}
             />
           </View>
-        </>
+        </View>
       )}
 
       {phase.step === 'working' && (
@@ -129,14 +139,13 @@ export default function CaptureScreen() {
       )}
 
       {phase.step === 'error' && (
-        <>
+        <View style={styles.centered}>
           <Text style={styles.errorTitle}>Something went wrong</Text>
           <Text style={styles.errorText}>{phase.message}</Text>
           <View style={styles.buttons}>
             <PrimaryButton title="Try again" onPress={() => setPhase({ step: 'pick' })} />
-            <PrimaryButton title="Back to home" variant="ghost" onPress={() => router.back()} />
           </View>
-        </>
+        </View>
       )}
     </View>
   );
@@ -145,14 +154,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.surfaceTint,
-    alignItems: 'center',
-    justifyContent: 'center',
     padding: spacing.l,
-    gap: spacing.s,
   },
   back: {
-    marginBottom: spacing.m,
-    alignSelf: 'flex-start',
+    alignSelf: 'stretch',
+  },
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.s,
   },
   title: {
     ...typography.h2,
