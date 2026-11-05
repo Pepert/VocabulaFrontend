@@ -35,7 +35,7 @@ export default function SignInScreen() {
   useEffect(() => {
     loadSession().then((session) => {
       if (session) {
-        router.replace('/me');
+        router.replace('/home');
       }
     });
   }, [router]);
@@ -58,8 +58,13 @@ export default function SignInScreen() {
       discovery
     )
       .then(async (tokens) => {
-        await saveSession(tokens);
-        router.replace('/me');
+        await saveSession({
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken ?? undefined,
+          issuedAt: tokens.issuedAt,
+          expiresIn: tokens.expiresIn,
+        });
+        router.replace('/home');
       })
       .catch((e: unknown) => {
         setError(String(e));

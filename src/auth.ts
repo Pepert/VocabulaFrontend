@@ -1,5 +1,4 @@
 import * as SecureStore from 'expo-secure-store';
-import type { TokenResponse } from 'expo-auth-session';
 import { SESSION_STORAGE_KEY } from './config';
 
 export type Session = {
@@ -9,13 +8,7 @@ export type Session = {
   expiresIn?: number;
 };
 
-export async function saveSession(tokens: TokenResponse, key: string = SESSION_STORAGE_KEY): Promise<void> {
-  const session: Session = {
-    accessToken: tokens.accessToken,
-    refreshToken: tokens.refreshToken ?? undefined,
-    issuedAt: tokens.issuedAt,
-    expiresIn: tokens.expiresIn,
-  };
+export async function saveSession(session: Session, key: string = SESSION_STORAGE_KEY): Promise<void> {
   await SecureStore.setItemAsync(key, JSON.stringify(session));
 }
 
