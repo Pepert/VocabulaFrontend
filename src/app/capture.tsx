@@ -3,7 +3,7 @@ import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native'
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { extractKnowledge, generateChapter, type GeneratedStory, ApiError } from '../api';
+import { extractKnowledge, generateChapter, getChapters, ApiError } from '../api';
 
 /** Must match the backend's per-upload limit. */
 const MaxImagesPerUpload = 10;
@@ -11,7 +11,6 @@ const MaxImagesPerUpload = 10;
 type Phase =
   | { step: 'pick' }
   | { step: 'working'; label: string }
-  | { step: 'done'; story: GeneratedStory }
   | { step: 'error'; message: string };
 
 export default function CaptureScreen() {
@@ -82,10 +81,19 @@ export default function CaptureScreen() {
       );
 
       setPhase({ step: 'working', label: 'Writing your next chapter…' });
-      const story = await generateChapter(knowledge);
+      await generateChapter(knowledge);
 
-      setPhase({ step: 'done', story });
+      // Redirect to the freshly generated chapter; the highest chapter
+      // number is the one that was just written.
+      setPhase({ step: 'working', label: 'Opening your chapter…' });
+      const chapters = await getChapters();
+      const latest = Math.max(...chapters.chapters.map((c) => c.chapterNumber));
+      router.replace(`/chapter/${latest}`);
     } catch (e) {
+      if (e instanceof ApiError && e.status === 401) {
+        router.replace('/');
+        return;
+      }
       const message = e instanceof ApiError ? `${e.status}: ${e.message}` : String(e);
       setPhase({ step: 'error', message });
     }
@@ -108,17 +116,6 @@ export default function CaptureScreen() {
         <>
           <ActivityIndicator />
           <Text style={styles.muted}>{phase.label}</Text>
-        </>
-      )}
-
-      {phase.step === 'done' && (
-        <>
-          <Text style={styles.title}>{phase.story.title}</Text>
-          <Text style={styles.story}>{phase.story.story}</Text>
-          <View style={styles.buttons}>
-            <Button title="Back to my story" onPress={() => router.replace('/story')} />
-            <Button title="Add more material" onPress={() => setPhase({ step: 'pick' })} />
-          </View>
         </>
       )}
 
@@ -152,10 +149,6 @@ const styles = StyleSheet.create({
   muted: {
     color: '#555',
     textAlign: 'center',
-  },
-  story: {
-    marginTop: 16,
-    lineHeight: 24,
   },
   buttons: {
     marginTop: 24,
