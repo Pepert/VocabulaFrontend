@@ -40,3 +40,4 @@ Docs: https://docs.expo.dev/eas/index.md
 - Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
 - Every new or updated feature ships with tests when relevant: add or adapt Jest tests in `src/__tests__/` in the same change, and keep `npx tsc --noEmit`, `npx eslint src/`, and `npm test` clean before declaring a task done.
+- Keep documentation in sync in the same change that makes it stale: route or navigation changes update `docs/page-flow.md` and the README flow diagram; setup or tooling changes update `docs/local-development.md`; structural changes update the README; visual or theme changes update `docs/design.md`.
