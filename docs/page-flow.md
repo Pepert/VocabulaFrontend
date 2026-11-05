@@ -4,12 +4,12 @@ The app has five routes (Expo Router - each file under `src/app/` is a route):
 
 ```mermaid
 flowchart TD
-    index[index<br/>Sign in<br/>only when no session] -- session restored --> home[home<br/>Add resources · Chapters · Sign out]
-    home -- Add resources --> capture[capture<br/>camera or library, 1-10 photos]
-    home -- Chapters --> chapters[chapters<br/>list of all chapters, back to home]
-    chapters -- tap a chapter --> chapter[chapter/[number]<br/>one chapter, back to the list]
-    capture -- chapter generated --> chapter
-    index -- failed refresh / sign out from home --> index
+    A["index<br/>Sign in — only when there is no session"] -- "session restored" --> B["home<br/>Add resources · Chapters · Sign out"]
+    B -- "Add resources" --> C["capture<br/>camera or library, 1-10 photos"]
+    B -- "Chapters" --> D["chapters<br/>all chapters, back to home"]
+    D -- "tap a chapter" --> E["chapter/[number]<br/>one chapter, back to the list"]
+    C -- "chapter generated" --> E
+    B -- "sign out" --> A
 ```
 
 ## Behavior details
