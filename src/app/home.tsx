@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { COGNITO, logoutUrl } from '../config';
 import { clearSession } from '../auth';
-import { getChapters, type StoryChapter } from '../api';
+import { getChapters, ApiError, type StoryChapter } from '../api';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -14,8 +14,15 @@ export default function HomeScreen() {
   useEffect(() => {
     getChapters()
       .then((response) => setChapters(response.chapters))
-      .catch((e: unknown) => setError(String(e)));
-  }, []);
+      .catch((e: unknown) => {
+        if (e instanceof ApiError && e.status === 401) {
+          // Session expired: back to the sign-in screen.
+          router.replace('/');
+          return;
+        }
+        setError(String(e));
+      });
+  }, [router]);
 
   const signOut = async () => {
     await WebBrowser.openAuthSessionAsync(logoutUrl(), COGNITO.nativeCallback);
@@ -27,7 +34,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Your story</Text>
       {error ? (
-        <Text style={styles.error}>Could not load your story: {error}</Text>
+        <Text style={styles.error}>Could not load your chapters: {error}</Text>
       ) : chapters === null ? (
         <ActivityIndicator />
       ) : chapters.length === 0 ? (
@@ -40,10 +47,10 @@ export default function HomeScreen() {
       )}
 
       <View style={styles.buttons}>
-        <Button title="Add learning material" onPress={() => router.push('/capture')} disabled={chapters === null} />
+        <Button title="Add resources" onPress={() => router.push('/capture')} disabled={chapters === null} />
         <Button
-          title="Read my story"
-          onPress={() => router.push('/story')}
+          title="Chapters"
+          onPress={() => router.push('/chapters')}
           disabled={!chapters || chapters.length === 0}
         />
       </View>

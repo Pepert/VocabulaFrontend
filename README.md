@@ -25,6 +25,23 @@ This is the mobile app (React Native / Expo / TypeScript). The backend — ASP.N
 
 - `src/app/` — screens (Expo Router: each file is a route)
 - `src/auth.ts` — session storage (keychain)
+- `src/api.ts` — API client with token refresh
 - `src/config.ts` — API and Cognito coordinates
+
+## Page flow
+
+The learner journey across the app's five routes:
+
+```mermaid
+flowchart TD
+    A["index<br/>Sign in — only when there is no session"] -- "session restored" --> B["home<br/>Add resources · Chapters · Sign out"]
+    B -- "Add resources" --> C["capture<br/>camera or library, 1-10 photos"]
+    B -- "Chapters" --> D["chapters<br/>all chapters, back to home"]
+    D -- "tap a chapter" --> E["chapter/[number]<br/>one chapter, back to the list"]
+    C -- "chapter generated" --> E
+    B -- "sign out" --> A
+```
+
+Full route-by-route behavior: [docs/page-flow.md](docs/page-flow.md)
 
 For local development (Xcode, running on a physical iPhone, the sign-in flow), see [docs/local-development.md](docs/local-development.md).
