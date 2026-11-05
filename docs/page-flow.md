@@ -21,9 +21,9 @@ flowchart TD
 - **`home`** shows the story status and offers the two product actions.
   API tokens are cleared before routing to `index` on session expiry.
 - **`capture`** handles the whole extraction/generation flow with progress
-  states. On success it redirects to the freshly generated chapter page
-  (the last chapter number) - the chapter is never displayed on the capture
-  screen itself.
+  states, and has a back button to home while picking. On success it
+  redirects to the freshly generated chapter page (the last chapter
+  number) - the chapter is never displayed on the capture screen itself.
 - **`chapters`** lists every chapter in reading order. Each row opens the
   chapter page; the screen has a back button to home.
 - **`chapter/[number]`** shows a single chapter. Its back button returns to

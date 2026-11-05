@@ -105,6 +105,7 @@ export default function CaptureScreen() {
     <View style={styles.container}>
       {phase.step === 'pick' && (
         <>
+          <PrimaryButton title="‹ Home" variant="ghost" onPress={() => router.back()} style={styles.back} />
           <Text style={styles.title}>Add learning material</Text>
           <Text style={styles.muted}>
             Photograph a notebook page; the next chapter of your story uses what it finds.
@@ -140,7 +141,6 @@ export default function CaptureScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -149,6 +149,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: spacing.l,
     gap: spacing.s,
+  },
+  back: {
+    marginBottom: spacing.m,
+    alignSelf: 'flex-start',
   },
   title: {
     ...typography.h2,
