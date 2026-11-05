@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getChapters, ApiError, type StoryChapter } from '../../api';
+import PrimaryButton from '../../components/PrimaryButton';
+import { colors, fontFamily, radius, spacing, typography } from '../../theme';
 
 /** Reading page for a single chapter, routed as /chapter/[number]. */
 export default function ChapterScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { number } = useLocalSearchParams<{ number: string }>();
   const chapterNumber = Number(number);
   // undefined = still loading, null = chapter not found.
@@ -27,26 +31,28 @@ export default function ChapterScreen() {
 
   if (chapter === undefined) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator />
+      <View style={styles.centered}>
+        <ActivityIndicator color={colors.green} />
       </View>
     );
   }
 
   if (chapter === null) {
     return (
-      <View style={styles.container}>
+      <View style={styles.centered}>
         <Text style={styles.muted}>Chapter {number} not found.</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.list} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <Button title="‹ Chapters" onPress={() => router.back()} />
+    <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.s }]}>
+      <PrimaryButton title="‹ Chapters" variant="ghost" onPress={() => router.back()} />
+
+      <View style={styles.pill}>
+        <Text style={styles.pillText}>Chapter {chapter.chapterNumber}</Text>
       </View>
-      <Text style={styles.chapterLabel}>Chapter {chapter.chapterNumber}</Text>
+
       <Text style={styles.title}>{chapter.storyTitle}</Text>
       <Text style={styles.story}>{chapter.content}</Text>
     </ScrollView>
@@ -54,41 +60,44 @@ export default function ChapterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  centered: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
+    padding: spacing.l,
   },
-  list: {
+  scroll: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
   },
   content: {
-    padding: 24,
-    gap: 8,
+    padding: spacing.l,
+    paddingBottom: spacing.xxl,
+    gap: spacing.s,
   },
-  header: {
-    marginBottom: 16,
-    alignItems: 'flex-start',
+  pill: {
+    marginTop: spacing.m,
+    alignSelf: 'flex-start',
+    backgroundColor: colors.yellow,
+    borderRadius: radius.pill,
+    paddingVertical: spacing.xs + 2,
+    paddingHorizontal: spacing.m,
   },
-  chapterLabel: {
-    fontSize: 14,
-    color: '#555',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+  pillText: {
+    ...fontFamily(800),
+    fontSize: 13,
+    letterSpacing: 0.5,
+    color: colors.text,
   },
   title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 16,
+    ...typography.h1,
   },
   story: {
-    fontSize: 17,
-    lineHeight: 28,
+    ...typography.reading,
+    marginTop: spacing.m,
   },
   muted: {
-    color: '#555',
+    ...typography.bodyMuted,
   },
 });

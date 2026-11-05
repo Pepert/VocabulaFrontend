@@ -42,6 +42,6 @@ flowchart TD
     B -- "sign out" --> A
 ```
 
-Full route-by-route behavior: [docs/page-flow.md](docs/page-flow.md)
-
+Full route-by-route behavior: [docs/page-flow.md](docs/page-flow.md) ·
+Design charter: [docs/design.md](docs/design.md) ·
 For local development (Xcode, running on a physical iPhone, the sign-in flow), see [docs/local-development.md](docs/local-development.md).

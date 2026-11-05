@@ -1,14 +1,16 @@
 import { exchangeCodeAsync, makeRedirectUri, useAutoDiscovery, useAuthRequest } from 'expo-auth-session';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { COGNITO } from '../config';
 import { loadSession, saveSession } from '../auth';
+import PrimaryButton from '../components/PrimaryButton';
+import { colors, spacing, typography } from '../theme';
 
 /**
  * Deep link Cognito redirects to after sign-in. In development builds this
- * resolves to the app's registered scheme (vocabula://callback); it is listed
- * as a callback URL on the Cognito app client.
+ * resolves to the app's registered scheme (vocabula://callback); it is
+ * listed as a callback URL on the Cognito app client.
  */
 function useRedirectUri(): string {
   return useMemo(() => makeRedirectUri({ native: COGNITO.nativeCallback }), []);
@@ -31,7 +33,7 @@ export default function SignInScreen() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Already signed in? Skip straight to the profile screen.
+  // Already signed in? Skip straight to home.
   useEffect(() => {
     loadSession().then((session) => {
       if (session) {
@@ -75,15 +77,18 @@ export default function SignInScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.badge}>
+        <Text style={styles.badgeText}>V</Text>
+      </View>
       <Text style={styles.title}>Vocabula</Text>
-      <Text style={styles.subtitle}>Personalized stories for language learners</Text>
+      <Text style={styles.subtitle}>Your story, written with the words you are learning.</Text>
       <View style={styles.button}>
         {busy ? (
-          <ActivityIndicator />
+          <ActivityIndicator color={colors.green} />
         ) : (
-          <Button
-            disabled={!request}
+          <PrimaryButton
             title="Sign in"
+            disabled={!request}
             onPress={() => {
               setError(null);
               setBusy(true);
@@ -100,25 +105,43 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
-    gap: 8,
+    padding: spacing.l,
+    gap: spacing.s,
+  },
+  badge: {
+    width: 96,
+    height: 96,
+    borderRadius: 28,
+    backgroundColor: colors.green,
+    borderBottomWidth: 6,
+    borderBottomColor: colors.greenEdge,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.s,
+  },
+  badgeText: {
+    ...typography.h1,
+    color: colors.white,
+    fontSize: 48,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    ...typography.h1,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#555',
+    ...typography.bodyMuted,
+    textAlign: 'center',
+    maxWidth: 260,
   },
   button: {
-    marginTop: 32,
-    width: 220,
+    marginTop: spacing.xl,
+    width: 260,
   },
   error: {
-    color: '#b00020',
+    ...typography.bodyMuted,
+    color: colors.red,
+    textAlign: 'center',
   },
 });

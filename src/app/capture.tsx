@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { extractKnowledge, generateChapter, getChapters, ApiError } from '../api';
+import PrimaryButton from '../components/PrimaryButton';
+import { colors, spacing, typography } from '../theme';
 
 /** Must match the backend's per-upload limit. */
 const MaxImagesPerUpload = 10;
@@ -15,6 +18,7 @@ type Phase =
 
 export default function CaptureScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [phase, setPhase] = useState<Phase>({ step: 'pick' });
 
   const addMaterial = async (source: 'camera' | 'library') => {
@@ -101,62 +105,88 @@ export default function CaptureScreen() {
 
   return (
     <View style={styles.container}>
+      {phase.step !== 'working' && (
+        <PrimaryButton
+          title="‹ Home"
+          variant="ghost"
+          onPress={() => router.back()}
+          style={[styles.back, { marginTop: insets.top + spacing.s }]}
+        />
+      )}
+
       {phase.step === 'pick' && (
-        <>
+        <View style={styles.centered}>
           <Text style={styles.title}>Add learning material</Text>
-          <Text style={styles.muted}>Photograph a notebook page; the next chapter of your story uses what it finds.</Text>
+          <Text style={styles.muted}>
+            Photograph a notebook page; the next chapter of your story uses what it finds.
+          </Text>
           <View style={styles.buttons}>
-            <Button title="Take a photo" onPress={() => addMaterial('camera')} />
-            <Button title="Choose from library" onPress={() => addMaterial('library')} />
+            <PrimaryButton title="Take a photo" onPress={() => addMaterial('camera')} />
+            <PrimaryButton
+              title="Choose from library"
+              variant="ghost"
+              onPress={() => addMaterial('library')}
+            />
           </View>
-        </>
+        </View>
       )}
 
       {phase.step === 'working' && (
         <>
-          <ActivityIndicator />
+          <ActivityIndicator color={colors.green} />
           <Text style={styles.muted}>{phase.label}</Text>
         </>
       )}
 
       {phase.step === 'error' && (
-        <>
-          <Text style={styles.title}>Something went wrong</Text>
-          <Text style={styles.error}>{phase.message}</Text>
+        <View style={styles.centered}>
+          <Text style={styles.errorTitle}>Something went wrong</Text>
+          <Text style={styles.errorText}>{phase.message}</Text>
           <View style={styles.buttons}>
-            <Button title="Try again" onPress={() => setPhase({ step: 'pick' })} />
-            <Button title="Back to home" onPress={() => router.back()} />
+            <PrimaryButton title="Try again" onPress={() => setPhase({ step: 'pick' })} />
           </View>
-        </>
+        </View>
       )}
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.surfaceTint,
+    padding: spacing.l,
+  },
+  back: {
+    alignSelf: 'stretch',
+  },
+  centered: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
-    gap: 8,
+    gap: spacing.s,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    ...typography.h2,
   },
   muted: {
-    color: '#555',
+    ...typography.bodyMuted,
     textAlign: 'center',
+    maxWidth: 280,
   },
   buttons: {
-    marginTop: 24,
-    width: 240,
-    gap: 12,
+    marginTop: spacing.xl,
+    width: '100%',
+    maxWidth: 320,
+    gap: spacing.m,
   },
-  error: {
-    color: '#b00020',
+  errorTitle: {
+    ...typography.h2,
+    color: colors.red,
+  },
+  errorText: {
+    ...typography.bodyMuted,
+    color: colors.red,
     textAlign: 'center',
+    maxWidth: 300,
   },
 });
