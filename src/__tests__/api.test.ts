@@ -137,15 +137,25 @@ describe('getChapters', () => {
             content: 'Hej!',
             createdAt: '2026-11-04T09:00:00Z',
           },
+          {
+            chapterNumber: 2,
+            storyTitle: 'En morgon',
+            title: 'Nya vänner',
+            content: 'Hej igen!',
+            createdAt: '2026-11-05T09:00:00Z',
+          },
         ],
       })
     );
 
     const result = await getChapters();
 
-    expect(result.chapters).toHaveLength(1);
+    expect(result.chapters).toHaveLength(2);
     expect(result.chapters[0].chapterNumber).toBe(1);
     expect(result.chapters[0].content).toBe('Hej!');
+    // Chapters written before per-chapter titles have no title.
+    expect(result.chapters[0].title).toBeUndefined();
+    expect(result.chapters[1].title).toBe('Nya vänner');
   });
 
   it('throws ApiError with details when the request fails', async () => {

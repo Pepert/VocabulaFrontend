@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as WebBrowser from 'expo-web-browser';
 import { COGNITO, logoutUrl } from '../config';
@@ -15,18 +15,36 @@ export default function HomeScreen() {
   const [chapters, setChapters] = useState<StoryChapter[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    getChapters()
-      .then((response) => setChapters(response.chapters))
-      .catch((e: unknown) => {
-        if (e instanceof ApiError && e.status === 401) {
-          // Session expired: back to the sign-in screen.
-          router.replace('/');
-          return;
-        }
-        setError(String(e));
-      });
-  }, [router]);
+  // Refetch on every focus: coming back from the chapter generated for a
+  // new capture must re-enable the Chapters button, which depends on the
+  // count just changing on the server.
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+
+      getChapters()
+        .then((response) => {
+          if (!cancelled) {
+            setChapters(response.chapters);
+          }
+        })
+        .catch((e: unknown) => {
+          if (cancelled) {
+            return;
+          }
+          if (e instanceof ApiError && e.status === 401) {
+            // Session expired: back to the sign-in screen.
+            router.replace('/');
+            return;
+          }
+          setError(String(e));
+        });
+
+      return () => {
+        cancelled = true;
+      };
+    }, [router])
+  );
 
   const signOut = async () => {
     await WebBrowser.openAuthSessionAsync(logoutUrl(), COGNITO.nativeCallback);

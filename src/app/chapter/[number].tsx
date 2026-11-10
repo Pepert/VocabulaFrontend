@@ -53,7 +53,7 @@ export default function ChapterScreen() {
         <Text style={styles.pillText}>Chapter {chapter.chapterNumber}</Text>
       </View>
 
-      <Text style={styles.title}>{chapter.storyTitle}</Text>
+      <Text style={styles.title}>{chapter.title ?? chapter.storyTitle}</Text>
       <Text style={styles.story}>{chapter.content}</Text>
     </ScrollView>
   );
