@@ -13,7 +13,7 @@ describe('splitChapterByNewWords', () => {
     ]);
   });
 
-  it('marks every occurrence of each new word, keeping positions', () => {
+  it('colors only the first occurrence of each new word', () => {
     const segments = splitChapterByNewWords('— Klockan, säger han. KLOCKAN? Ja.', [
       entry('klockan', 'clock'),
     ]);
@@ -21,20 +21,22 @@ describe('splitChapterByNewWords', () => {
     expect(segments).toEqual([
       { kind: 'text', text: '— ' },
       { kind: 'newWord', text: 'Klockan', entry: entry('klockan', 'clock') },
-      { kind: 'text', text: ', säger han. ' },
-      { kind: 'newWord', text: 'KLOCKAN', entry: entry('klockan', 'clock') },
-      { kind: 'text', text: '? Ja.' },
+      // The second occurrence renders as plain text.
+      { kind: 'text', text: ', säger han. KLOCKAN? Ja.' },
     ]);
   });
 
-  it('carries the definition with the marked spans', () => {
-    const segments = splitChapterByNewWords('Solen skiner idag.', [entry('solen', 'the sun')]);
+  it('carries the definition and kind with the marked span', () => {
+    const extracted = { word: 'solen', definition: 'the sun', kind: 'extracted' };
+    const segments = splitChapterByNewWords('Solen skiner.', [extracted]);
 
-    const marked = segments.find((s) => s.kind === 'newWord');
-    expect(marked).toEqual({ kind: 'newWord', text: 'Solen', entry: entry('solen', 'the sun') });
+    expect(segments).toEqual([
+      { kind: 'newWord', text: 'Solen', entry: extracted },
+      { kind: 'text', text: ' skiner.' },
+    ]);
   });
 
-  it('does not underline parts of other words (no substring matches)', () => {
+  it('does not mark parts of other words (no substring matches)', () => {
     const segments = splitChapterByNewWords('Klockigt ord.', [entry('klockan')]);
 
     expect(segments).toEqual([{ kind: 'text', text: 'Klockigt ord.' }]);

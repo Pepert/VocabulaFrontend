@@ -9,7 +9,7 @@ This is the mobile app (React Native / Expo / TypeScript). The backend — ASP.N
 
 - **Sign in** with Google, LinkedIn, or email — via Amazon Cognito's hosted UI (OAuth authorization-code flow with PKCE)
 - **Add learning material**: photograph a notebook page; the backend extracts vocabulary and grammar using the Mistral OCR API
-- **Read your story**: each new photo generates the next chapter, continuing from the previous one. New words come dotted-underlined — tap one for its definition
+- **Read your story**: each new photo generates the next chapter, continuing from the previous one. New vocabulary appears in colour — blue if the story introduced it, green when it's from your notebook — tap any for its definition
 - **Story history**: re-read your chapters, newest last
 
 ## Stack

@@ -6,9 +6,10 @@ export type Segment =
 
 /**
  * Splits a chapter into renderable segments, marking the spans that are
- * words the chapter introduced. Matching is per letter-run (word), case
- * insensitive, so inflections of a known word ("kaffet" vs "kaffe") are
- * not underlined — only exact word forms.
+ * words the chapter introduced or showed for the first time. Matching is
+ * per letter-run (word), case insensitive, and each word is underlined
+ * only where it first appears in the chapter — later occurrences render
+ * as plain text.
  */
 export function splitChapterByNewWords(
   content: string,
@@ -21,19 +22,22 @@ export function splitChapterByNewWords(
   const entries = new Map(
     newWords.map((entry) => [entry.word.toLocaleLowerCase(), entry])
   );
+  const underlinedOnce = new Set<string>();
   const letterRun = /[\p{L}]+/gu;
   const segments: Segment[] = [];
   let lastIndex = 0;
 
   let match: RegExpExecArray | null;
   while ((match = letterRun.exec(content)) !== null) {
-    const entry = entries.get(match[0].toLocaleLowerCase());
-    if (!entry) continue;
+    const key = match[0].toLocaleLowerCase();
+    const entry = entries.get(key);
+    if (!entry || underlinedOnce.has(key)) continue;
 
     if (match.index > lastIndex) {
       segments.push({ kind: 'text', text: content.slice(lastIndex, match.index) });
     }
     segments.push({ kind: 'newWord', text: match[0], entry });
+    underlinedOnce.add(key);
     lastIndex = match.index + match[0].length;
   }
 

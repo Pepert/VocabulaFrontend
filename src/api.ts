@@ -29,8 +29,11 @@ export type NotebookKnowledge = {
 
 export type NewWordDefinition = {
   word: string;
-  /** Provided by the model for tap-to-learn; may be missing. */
+  /** Provided by the model (ai) or the notebook translation (extracted); may be missing. */
   definition?: string | null;
+  /** 'ai' = vocabulary the story introduced (blue);
+   *  'extracted' = notebook vocabulary's first appearance (green). */
+  kind?: string | null;
 };
 
 /** Response of POST /api/stories/generate: the chapter number lets the

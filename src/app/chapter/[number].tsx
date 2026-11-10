@@ -66,7 +66,7 @@ export default function ChapterScreen() {
             ) : (
               <Text
                 key={index}
-                style={styles.newWord}
+                style={segment.entry.kind === 'extracted' ? styles.notebookWord : styles.aiWord}
                 onPress={() => setSelectedWord(segment.entry)}
               >
                 {segment.text}
@@ -135,11 +135,16 @@ const styles = StyleSheet.create({
     ...typography.reading,
     marginTop: spacing.m,
   },
-  newWord: {
+  // Blue = vocabulary the story introduced; green = notebook
+  // vocabulary's first appearance. Colour alone marks the words: no
+  // underline (more modern, and it sidesteps RN's tight underline).
+  aiWord: {
     ...typography.reading,
     color: colors.blue,
-    textDecorationLine: 'underline',
-    textDecorationStyle: 'dotted',
+  },
+  notebookWord: {
+    ...typography.reading,
+    color: colors.green,
   },
   overlay: {
     flex: 1,

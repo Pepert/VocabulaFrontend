@@ -65,8 +65,11 @@ the root layout before any screen renders.
   for navigation/back), `locked` (disabled), `danger`.
 - `Card` - the content surface, also from the same file.
 - New-word spans (`src/lib/chapterSegments.ts` + the reading page) -
-  words a chapter introduced are rendered with a blue dotted underline;
-  tapping one opens a small definition sheet (word + meaning).
+  words worth noticing render in colour, no underline (modern flat look),
+  and tapping one opens a small definition sheet (word + meaning).
+  Blue = vocabulary the story itself introduced; green = notebook
+  vocabulary appearing in the story for the first time. Only the first
+  occurrence of each word is coloured.
   `splitChapterByNewWords` is the pure helper that splits chapter text
   into renderable segments and carries the selected entry to the sheet.
 
@@ -75,4 +78,3 @@ the root layout before any screen renders.
 - Dark mode (tokens would need a second palette).
 - A mascot or illustrated empty states (needs artwork).
 - App icon and splash artwork (the current badge is a placeholder).
-- Dotted-underline unknown vocabulary in chapters (interaction design TBD).
