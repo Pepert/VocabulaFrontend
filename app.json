@@ -9,9 +9,10 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.VocabulaFrontend"
+      "bundleIdentifier": "dev.vocabula.app"
     },
     "android": {
+      "package": "dev.vocabula.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",

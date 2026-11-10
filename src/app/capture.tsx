@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { extractKnowledge, generateChapter, getChapters, ApiError } from '../api';
+import { extractKnowledge, generateChapter, ApiError } from '../api';
 import PrimaryButton from '../components/PrimaryButton';
 import { colors, spacing, typography } from '../theme';
 
@@ -85,14 +85,12 @@ export default function CaptureScreen() {
       );
 
       setPhase({ step: 'working', label: 'Writing your next chapter…' });
-      await generateChapter(knowledge);
+      const generate = await generateChapter(knowledge);
 
-      // Redirect to the freshly generated chapter; the highest chapter
-      // number is the one that was just written.
+      // The response carries the new chapter's number, so no re-fetch of
+      // the chapter list is needed to redirect to it.
       setPhase({ step: 'working', label: 'Opening your chapter…' });
-      const chapters = await getChapters();
-      const latest = Math.max(...chapters.chapters.map((c) => c.chapterNumber));
-      router.replace(`/chapter/${latest}`);
+      router.replace(`/chapter/${generate.chapterNumber}`);
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) {
         router.replace('/');

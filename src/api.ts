@@ -27,12 +27,30 @@ export type NotebookKnowledge = {
   uncertainItems: string[];
 };
 
+export type NewWordDefinition = {
+  word: string;
+  /** Provided by the model (ai) or the notebook translation (extracted); may be missing. */
+  definition?: string | null;
+  /** 'ai' = vocabulary the story introduced (blue);
+   *  'extracted' = notebook vocabulary's first appearance (green). */
+  kind?: string | null;
+};
+
+/** Response of POST /api/stories/generate: the chapter number lets the
+ * client redirect straight to the freshly written chapter. */
+export type GenerateChapterResult = {
+  chapterNumber: number;
+  story: GeneratedStory;
+};
+
 export type GeneratedStory = {
   title: string;
   story: string;
   usedVocabulary: string[];
   usedGrammarPoints: string[];
   potentiallyNewLanguage: string[];
+  summary?: string;
+  newWords?: NewWordDefinition[];
 };
 
 export type StoryChapter = {
@@ -41,6 +59,8 @@ export type StoryChapter = {
   /** Per-chapter title; absent on chapters written before it existed. */
   title?: string;
   content: string;
+  /** Words this chapter introduced, for the dotted underline. */
+  newWords: NewWordDefinition[];
   createdAt: string;
 };
 
@@ -163,8 +183,8 @@ export async function extractKnowledge(imageUris: string[], mediaType: string): 
 }
 
 /** Generate the next chapter of the story from freshly extracted knowledge. */
-export async function generateChapter(knowledge: NotebookKnowledge): Promise<GeneratedStory> {
-  return apiJson<GeneratedStory>('/api/stories/generate', {
+export async function generateChapter(knowledge: NotebookKnowledge): Promise<GenerateChapterResult> {
+  return apiJson<GenerateChapterResult>('/api/stories/generate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(knowledge),

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { getChapters, ApiError, type StoryChapter } from '../../api';
+import { getChapters, ApiError, type NewWordDefinition, type StoryChapter } from '../../api';
+import { splitChapterByNewWords } from '../../lib/chapterSegments';
 import PrimaryButton from '../../components/PrimaryButton';
 import { colors, fontFamily, radius, spacing, typography } from '../../theme';
 
@@ -14,6 +15,7 @@ export default function ChapterScreen() {
   const chapterNumber = Number(number);
   // undefined = still loading, null = chapter not found.
   const [chapter, setChapter] = useState<StoryChapter | null | undefined>(undefined);
+  const [selectedWord, setSelectedWord] = useState<NewWordDefinition | null>(null);
 
   useEffect(() => {
     getChapters()
@@ -45,17 +47,53 @@ export default function ChapterScreen() {
     );
   }
 
+  const segments = splitChapterByNewWords(chapter.content, chapter.newWords);
+
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.s }]}>
-      <PrimaryButton title="‹ Chapters" variant="ghost" onPress={() => router.back()} />
+    <>
+      <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.s }]}>
+        <PrimaryButton title="‹ Chapters" variant="ghost" onPress={() => router.back()} />
 
-      <View style={styles.pill}>
-        <Text style={styles.pillText}>Chapter {chapter.chapterNumber}</Text>
-      </View>
+        <View style={styles.pill}>
+          <Text style={styles.pillText}>Chapter {chapter.chapterNumber}</Text>
+        </View>
 
-      <Text style={styles.title}>{chapter.title ?? chapter.storyTitle}</Text>
-      <Text style={styles.story}>{chapter.content}</Text>
-    </ScrollView>
+        <Text style={styles.title}>{chapter.title ?? chapter.storyTitle}</Text>
+        <Text style={styles.story}>
+          {segments.map((segment, index) =>
+            segment.kind === 'text' ? (
+              <Text key={index}>{segment.text}</Text>
+            ) : (
+              <Text
+                key={index}
+                style={segment.entry.kind === 'extracted' ? styles.notebookWord : styles.aiWord}
+                onPress={() => setSelectedWord(segment.entry)}
+              >
+                {segment.text}
+              </Text>
+            )
+          )}
+        </Text>
+      </ScrollView>
+
+      {/* Tap-a-word definition sheet. */}
+      <Modal
+        visible={selectedWord !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSelectedWord(null)}
+      >
+        <Pressable style={styles.overlay} onPress={() => setSelectedWord(null)}>
+          <View style={styles.sheet}>
+            <Text style={styles.sheetWord}>{selectedWord?.word}</Text>
+            <Text style={styles.sheetDefinition}>
+              {selectedWord?.definition ?? 'No definition available yet — it may appear in a future chapter.'}
+            </Text>
+            <PrimaryButton title="Close" variant="ghost" onPress={() => setSelectedWord(null)} />
+          </View>
+        </Pressable>
+      </Modal>
+    </>
   );
 }
 
@@ -96,6 +134,42 @@ const styles = StyleSheet.create({
   story: {
     ...typography.reading,
     marginTop: spacing.m,
+  },
+  // Blue = vocabulary the story introduced; green = notebook
+  // vocabulary's first appearance. Colour marks the words, with a
+  // slightly bolder weight so they read as tappable in running text.
+  aiWord: {
+    ...typography.reading,
+    ...fontFamily(700),
+    color: colors.blue,
+  },
+  notebookWord: {
+    ...typography.reading,
+    ...fontFamily(700),
+    color: colors.green,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.l,
+  },
+  sheet: {
+    backgroundColor: colors.white,
+    borderRadius: radius.l,
+    borderWidth: 2,
+    borderColor: colors.border,
+    padding: spacing.l,
+    width: '100%',
+    maxWidth: 340,
+    gap: spacing.m,
+  },
+  sheetWord: {
+    ...typography.h2,
+  },
+  sheetDefinition: {
+    ...typography.bodyMuted,
   },
   muted: {
     ...typography.bodyMuted,

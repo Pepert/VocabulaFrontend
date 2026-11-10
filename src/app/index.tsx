@@ -89,10 +89,22 @@ export default function SignInScreen() {
           <PrimaryButton
             title="Sign in"
             disabled={!request}
-            onPress={() => {
+            onPress={async () => {
               setError(null);
               setBusy(true);
-              promptAsync();
+              const outcome = await promptAsync();
+              if (outcome.type === 'success') {
+                return; // the exchange effect takes over from here
+              }
+              // The user backed out (cancel/dismiss) or the browser flow
+              // failed before redirecting: end the loading state instead
+              // of spinning forever.
+              if (outcome.type === 'error') {
+                setError(
+                  outcome.params?.error_description ?? outcome.params?.error ?? 'Unknown error'
+                );
+              }
+              setBusy(false);
             }}
           />
         )}

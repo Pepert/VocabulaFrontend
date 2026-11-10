@@ -47,7 +47,11 @@ export default function HomeScreen() {
   );
 
   const signOut = async () => {
-    await WebBrowser.openAuthSessionAsync(logoutUrl(), COGNITO.nativeCallback);
+    const outcome = await WebBrowser.openAuthSessionAsync(logoutUrl(), COGNITO.nativeCallback);
+    // Cancelled the pop-up? Stay signed in instead of dropping the session.
+    if (outcome.type === 'cancel' || outcome.type === 'dismiss') {
+      return;
+    }
     await clearSession();
     router.replace('/');
   };
