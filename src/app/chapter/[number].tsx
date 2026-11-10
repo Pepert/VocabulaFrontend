@@ -136,14 +136,16 @@ const styles = StyleSheet.create({
     marginTop: spacing.m,
   },
   // Blue = vocabulary the story introduced; green = notebook
-  // vocabulary's first appearance. Colour alone marks the words: no
-  // underline (more modern, and it sidesteps RN's tight underline).
+  // vocabulary's first appearance. Colour marks the words, with a
+  // slightly bolder weight so they read as tappable in running text.
   aiWord: {
     ...typography.reading,
+    ...fontFamily(700),
     color: colors.blue,
   },
   notebookWord: {
     ...typography.reading,
+    ...fontFamily(700),
     color: colors.green,
   },
   overlay: {
