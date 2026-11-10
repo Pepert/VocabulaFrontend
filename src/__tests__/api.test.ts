@@ -5,7 +5,7 @@ import {
   loadSession,
   saveSession,
 } from '../auth';
-import { apiFetch, ApiError, extractKnowledge, getChapters } from '../api';
+import { apiFetch, ApiError, extractKnowledge, generateChapter, getChapters } from '../api';
 
 jest.mock('expo-secure-store', () => ({
   __esModule: true,
@@ -135,6 +135,7 @@ describe('getChapters', () => {
             chapterNumber: 1,
             storyTitle: 'En morgon',
             content: 'Hej!',
+            newWords: [],
             createdAt: '2026-11-04T09:00:00Z',
           },
           {
@@ -142,6 +143,7 @@ describe('getChapters', () => {
             storyTitle: 'En morgon',
             title: 'Nya vänner',
             content: 'Hej igen!',
+            newWords: [{ word: 'igen', definition: 'again' }],
             createdAt: '2026-11-05T09:00:00Z',
           },
         ],
@@ -156,6 +158,38 @@ describe('getChapters', () => {
     // Chapters written before per-chapter titles have no title.
     expect(result.chapters[0].title).toBeUndefined();
     expect(result.chapters[1].title).toBe('Nya vänner');
+    // New words come with definitions for tap-to-learn.
+    expect(result.chapters[1].newWords).toEqual([{ word: 'igen', definition: 'again' }]);
+  });
+
+  it('returns the new chapter number from generate', async () => {
+    await saveSession({ accessToken: 'token' });
+    (expoFetch as jest.Mock).mockResolvedValue(
+      okResponse({
+        chapterNumber: 3,
+        story: {
+          title: 'Tredje kapitlet',
+          story: 'Hej igen!',
+          usedVocabulary: ['hej'],
+          usedGrammarPoints: [],
+          potentiallyNewLanguage: ['igen'],
+          summary: 'De säger hej igen.',
+          newWords: [{ word: 'igen', definition: 'again' }],
+        },
+      })
+    );
+
+    const result = await generateChapter({
+      targetLanguage: 'Swedish',
+      sourceSummary: 'a page',
+      vocabulary: [],
+      grammarPoints: [],
+      uncertainItems: [],
+    });
+
+    expect(result.chapterNumber).toBe(3);
+    expect(result.story.title).toBe('Tredje kapitlet');
+    expect(result.story.newWords).toEqual([{ word: 'igen', definition: 'again' }]);
   });
 
   it('throws ApiError with details when the request fails', async () => {

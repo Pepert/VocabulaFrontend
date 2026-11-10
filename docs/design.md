@@ -64,6 +64,11 @@ the root layout before any screen renders.
   `green` (primary), `blue` (secondary emphasis), `ghost` (outlined,
   for navigation/back), `locked` (disabled), `danger`.
 - `Card` - the content surface, also from the same file.
+- New-word spans (`src/lib/chapterSegments.ts` + the reading page) -
+  words a chapter introduced are rendered with a blue dotted underline;
+  tapping one opens a small definition sheet (word + meaning).
+  `splitChapterByNewWords` is the pure helper that splits chapter text
+  into renderable segments and carries the selected entry to the sheet.
 
 ## Not yet decided (future)
 
