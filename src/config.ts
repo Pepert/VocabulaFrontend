@@ -11,7 +11,7 @@ export const COGNITO = {
   /** OIDC issuer of the user pool; the discovery document is served from it. */
   issuer: 'https://cognito-idp.eu-west-3.amazonaws.com/eu-west-3_ef1uEzee6',
   /** Hosted UI domain, used for signing out of the browser session. */
-  hostedUiDomain: 'https://vocabula-prod.auth.eu-west-3.amazoncognito.com',
+  hostedUiDomain: 'https://auth.vocabula.dev',
   /** App client id of "vocabula-app" in the user pool. */
   clientId: 'ln2cjlpn66bt33ll76ipssqdv',
   /** Deep link Cognito redirects to after sign-in and sign-out (registered in the app client). */
