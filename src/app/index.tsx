@@ -5,6 +5,8 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { useTranslation } from 'react-i18next';
 import { COGNITO } from '../config';
 import { loadSession, saveSession } from '../auth';
+import { updateUserLanguage } from '../api';
+import { getPreSigninChoice } from '../i18n';
 import PrimaryButton from '../components/PrimaryButton';
 import { useLanguage } from '../i18n/useLanguage';
 import { colors, fontFamily, radius, spacing, typography } from '../theme';
@@ -70,6 +72,13 @@ export default function SignInScreen() {
           issuedAt: tokens.issuedAt,
           expiresIn: tokens.expiresIn,
         });
+        // The language picked on this screen becomes the account's
+        // default: the backend needs it to write vocabulary translations
+        // and word definitions in the right language.
+        const choice = getPreSigninChoice();
+        if (choice) {
+          void updateUserLanguage(choice).catch(() => undefined);
+        }
         router.replace('/home');
       })
       .catch((e: unknown) => {

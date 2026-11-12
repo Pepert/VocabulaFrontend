@@ -5,7 +5,7 @@ import {
   loadSession,
   saveSession,
 } from '../auth';
-import { apiFetch, ApiError, extractKnowledge, generateChapter, getChapters, getUser, updateUserLanguage } from '../api';
+import { apiFetch, ApiError, extractKnowledge, generateChapter, getChapters, getUser, updateLearningLanguage, updateUserLanguage } from '../api';
 
 jest.mock('expo-secure-store', () => ({
   __esModule: true,
@@ -231,5 +231,38 @@ describe('users', () => {
     expect(url).toContain('/api/users/me');
     expect(init.method).toBe('PATCH');
     expect(JSON.parse(init.body)).toEqual({ language: 'en' });
+  });
+
+  it('getUser surfaces the learning language too', async () => {
+    await saveSession({ accessToken: 'token' });
+    (expoFetch as jest.Mock).mockResolvedValue(
+      okResponse({
+        userId: '63b8f3e2-0000-4000-8000-000000000001',
+        learningLanguage: 'fr',
+      })
+    );
+
+    const user = await getUser();
+
+    expect(user.learningLanguage).toBe('fr');
+    expect(user.language).toBeUndefined();
+  });
+
+  it('updateLearningLanguage PATCHes the studied language', async () => {
+    await saveSession({ accessToken: 'token' });
+    (expoFetch as jest.Mock).mockResolvedValue(
+      okResponse({
+        userId: '63b8f3e2-0000-4000-8000-000000000001',
+        learningLanguage: 'sv',
+      })
+    );
+
+    const user = await updateLearningLanguage('sv');
+
+    expect(user.learningLanguage).toBe('sv');
+    const [url, init] = (expoFetch as jest.Mock).mock.calls[0];
+    expect(url).toContain('/api/users/me/learning-language');
+    expect(init.method).toBe('PATCH');
+    expect(JSON.parse(init.body)).toEqual({ learningLanguage: 'sv' });
   });
 });

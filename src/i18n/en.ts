@@ -22,6 +22,10 @@ const en = {
     settings: 'Settings',
     signOut: 'Sign out',
     loadError: 'Could not load your chapters: {{error}}',
+    learning: 'Learning {{language}}',
+    chooseLanguageTitle: 'Which language are you learning?',
+    chooseLanguageText: 'Pick it below, and your story starts there.',
+    chooseLanguage: 'Choose a language',
   },
   capture: {
     title: 'Add learning material',
@@ -57,6 +61,12 @@ const en = {
     languageEnglish: 'English',
     languageFrench: 'Français',
     languageHint: 'Applies to the whole app, on all your devices.',
+    learningLanguage: 'The language I am learning',
+    learningHint: 'Switch anytime. Each language keeps its own story and chapters.',
+    learningEnglish: 'English',
+    learningFrench: 'French',
+    learningSpanish: 'Spanish',
+    learningSwedish: 'Swedish',
   },
 };
 

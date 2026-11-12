@@ -6,7 +6,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useTranslation } from 'react-i18next';
 import { COGNITO, logoutUrl } from '../config';
 import { clearSession } from '../auth';
-import { getChapters, ApiError, type StoryChapter } from '../api';
+import { getChapters, getUser, ApiError, type StoryChapter, type LearningLanguageCode } from '../api';
 import PrimaryButton, { Card } from '../components/PrimaryButton';
 import { colors, spacing, typography } from '../theme';
 
@@ -15,11 +15,21 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [chapters, setChapters] = useState<StoryChapter[] | null>(null);
+  const [learningLanguage, setLearningLanguage] = useState<LearningLanguageCode | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
+
+  // Localized name of the learned language, in the UI language.
+  const learningNames: Record<LearningLanguageCode, string> = {
+    en: t('settings.learningEnglish'),
+    fr: t('settings.learningFrench'),
+    es: t('settings.learningSpanish'),
+    sv: t('settings.learningSwedish'),
+  };
 
   // Refetch on every focus: coming back from the chapter generated for a
   // new capture must re-enable the Chapters button, which depends on the
-  // count just changing on the server.
+  // count just changing on the server. The learning language follows too,
+  // so a change made in Settings is reflected right away.
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
@@ -42,6 +52,16 @@ export default function HomeScreen() {
           setError(String(e));
         });
 
+      getUser()
+        .then((user) => {
+          if (!cancelled) {
+            setLearningLanguage(user.learningLanguage ?? null);
+          }
+        })
+        .catch(() => {
+          // Offline or expired: the chapters call decides what happens.
+        });
+
       return () => {
         cancelled = true;
       };
@@ -61,9 +81,21 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{t('home.title')}</Text>
+      {learningLanguage && (
+        <Text style={styles.subtitle}>
+          {t('home.learning', { language: learningNames[learningLanguage] })}
+        </Text>
+      )}
 
       {error ? (
         <Text style={styles.error}>{t('home.loadError', { error })}</Text>
+      ) : learningLanguage === undefined ? (
+        <ActivityIndicator color={colors.blue} />
+      ) : learningLanguage === null ? (
+        <Card style={styles.card}>
+          <Text style={styles.cardTitle}>{t('home.chooseLanguageTitle')}</Text>
+          <Text style={styles.cardText}>{t('home.chooseLanguageText')}</Text>
+        </Card>
       ) : chapters === null ? (
         <ActivityIndicator color={colors.blue} />
       ) : chapters.length === 0 ? (
@@ -81,17 +113,23 @@ export default function HomeScreen() {
       )}
 
       <View style={styles.actions}>
-        <PrimaryButton
-          title={t('home.addResources')}
-          disabled={chapters === null}
-          onPress={() => router.push('/capture')}
-        />
-        <PrimaryButton
-          title={t('home.chapters')}
-          variant="blue"
-          disabled={!chapters || chapters.length === 0}
-          onPress={() => router.push('/chapters')}
-        />
+        {learningLanguage === null ? (
+          <PrimaryButton title={t('home.chooseLanguage')} onPress={() => router.push('/settings')} />
+        ) : (
+          <>
+            <PrimaryButton
+              title={t('home.addResources')}
+              disabled={chapters === null}
+              onPress={() => router.push('/capture')}
+            />
+            <PrimaryButton
+              title={t('home.chapters')}
+              variant="blue"
+              disabled={!chapters || chapters.length === 0}
+              onPress={() => router.push('/chapters')}
+            />
+          </>
+        )}
       </View>
 
       <View style={[styles.footer, { marginBottom: insets.bottom + spacing.m }]}>
@@ -118,6 +156,10 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.h1,
+  },
+  subtitle: {
+    ...typography.bodyMuted,
+    fontWeight: '700',
   },
   card: {
     marginTop: spacing.l,
