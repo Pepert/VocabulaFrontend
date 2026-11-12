@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import i18n, { setPreSigninChoice, type AppLanguage } from '.';
+import i18n, { getPreSigninChoice, setPreSigninChoice, type AppLanguage } from '.';
 import { getUser, updateUserLanguage } from '../api';
 import { loadSession } from '../auth';
 
@@ -16,8 +16,10 @@ export function useLanguage(): {
     (i18n.language as AppLanguage) ?? 'en'
   );
 
-  // Pull the account preference after sign-in; no preference means the
-  // device language (or the pre-sign-in choice) stays.
+  // Pull the account preference after sign-in. When the account has none
+  // but the user picked a language on the sign-in page, that choice
+  // becomes the account's default — the backend needs it too, since it
+  // writes vocabulary translations and definitions in this language.
   useEffect(() => {
     let cancelled = false;
 
@@ -27,11 +29,22 @@ export function useLanguage(): {
       }
       getUser()
         .then((user) => {
-          if (cancelled || !user.language) {
+          if (cancelled) {
             return;
           }
-          void i18n.changeLanguage(user.language);
-          setLanguageState(user.language as AppLanguage);
+          if (user.language) {
+            // The account already carries a preference: it always wins.
+            void i18n.changeLanguage(user.language);
+            setLanguageState(user.language as AppLanguage);
+            return;
+          }
+
+          const choice = getPreSigninChoice();
+          if (choice) {
+            // Best effort: the app already displays the choice; persisting
+            // it also teaches the backend which language to define words in.
+            void updateUserLanguage(choice).catch(() => undefined);
+          }
         })
         .catch(() => {
           // Offline or not signed in: the current language simply stays.

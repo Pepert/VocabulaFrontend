@@ -23,6 +23,11 @@ export function setPreSigninChoice(language: AppLanguage): void {
   preSigninChoice = language;
 }
 
+/** The pending pre-sign-in choice, if the user made one. */
+export function getPreSigninChoice(): AppLanguage | null {
+  return preSigninChoice;
+}
+
 /** Pick the active language when the account carries no preference. */
 export function defaultLanguage(): AppLanguage {
   return preSigninChoice ?? deviceLanguage();
