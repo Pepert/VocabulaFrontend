@@ -196,11 +196,17 @@ export async function getChapters(): Promise<{ chapters: StoryChapter[] }> {
   return apiJson<{ chapters: StoryChapter[] }>('/api/stories/chapters');
 }
 
+/** Languages a user can learn (kept in sync with the backend catalogue). */
+export const LearningLanguageCodes = ['en', 'fr', 'es', 'sv'] as const;
+export type LearningLanguageCode = (typeof LearningLanguageCodes)[number];
+
 /** The authenticated user's account record. */
 export type CurrentUser = {
   userId: string;
   /** UI language preference; null = follow the device language. */
   language?: string | null;
+  /** The language the user is learning; null = not chosen yet. */
+  learningLanguage?: LearningLanguageCode | null;
 };
 
 /** Current account, including the UI language preference. */
@@ -214,5 +220,17 @@ export async function updateUserLanguage(language: string): Promise<CurrentUser>
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ language }),
+  });
+}
+
+/**
+ * Switch the learned language. Each language keeps its own knowledge and
+ * chapters; the daily chapter quota is shared across all of them.
+ */
+export async function updateLearningLanguage(learningLanguage: LearningLanguageCode): Promise<CurrentUser> {
+  return apiJson<CurrentUser>('/api/users/me/learning-language', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ learningLanguage }),
   });
 }

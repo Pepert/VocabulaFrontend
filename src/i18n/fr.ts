@@ -25,6 +25,10 @@ const fr: typeof en = {
     settings: 'Réglages',
     signOut: 'Se déconnecter',
     loadError: 'Impossible de charger vos chapitres : {{error}}',
+    learning: 'J’apprends {{language}}',
+    chooseLanguageTitle: 'Quelle langue apprenez-vous ?',
+    chooseLanguageText: 'Choisissez-la ci-dessous, et votre histoire commence.',
+    chooseLanguage: 'Choisir une langue',
   },
   capture: {
     title: 'Ajouter du matériel',
@@ -61,6 +65,12 @@ const fr: typeof en = {
     languageEnglish: 'English',
     languageFrench: 'Français',
     languageHint: 'S’applique à toute l’application, sur tous vos appareils.',
+    learningLanguage: 'La langue que j’apprends',
+    learningHint: 'Changez quand vous voulez. Chaque langue garde sa propre histoire et ses chapitres.',
+    learningEnglish: 'Anglais',
+    learningFrench: 'Français',
+    learningSpanish: 'Espagnol',
+    learningSwedish: 'Suédois',
   },
 };
 

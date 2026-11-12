@@ -65,9 +65,12 @@ the root layout before any screen renders.
   for navigation/back), `locked` (disabled), `danger`.
 - `Card` - the content surface, also from the same file.
 - Settings (`src/app/settings.tsx`) - expandable section header
-  ("General", open by default) with white option cards; the language
-  options use a green radio dot for the active one. The sign-in page
-  uses compact pill buttons for its EN/FR language selector.
+  ("General", open by default) with white option cards; the learned
+  language and the UI language each form a group of option rows, and the
+  active one uses a green radio dot. The sign-in page uses compact pill
+  buttons for its EN/FR language selector. Home shows the active learned
+  language under the title, and replaces the action buttons with a
+  single "Choose a language" card-button until one is picked.
 - New-word spans (`src/lib/chapterSegments.ts` + the reading page) -
   words worth noticing render in colour, no underline (modern flat look),
   and tapping one opens a small definition sheet (word + meaning).

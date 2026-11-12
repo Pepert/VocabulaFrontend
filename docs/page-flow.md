@@ -19,8 +19,11 @@ flowchart TD
   when a session exists in the keychain, so sign-in only shows up when there
   is no valid session (first launch, sign-out, or an expired session after a
   failed token refresh).
-- **`home`** shows the story status and offers the two product actions.
-  API tokens are cleared before routing to `index` on session expiry.
+- **`home`** shows the story status of the active learning language and
+  offers the two product actions. When no learning language is chosen yet,
+  the actions are replaced by a single "Choose a language" button to
+  Settings, since the backend refuses extraction without a choice. API
+  tokens are cleared before routing to `index` on session expiry.
 - **`capture`** handles the whole extraction/generation flow with progress
   states, and has a back button to home while picking. On success it
   redirects to the freshly generated chapter page (the last chapter
@@ -30,12 +33,14 @@ flowchart TD
 - **`chapter/[number]`** shows a single chapter. Its back button returns to
   the chapters list. There is deliberately no "add more material" from here:
   new material is added from home or capture only.
-- **`settings`** shows account-wide preferences. Today it holds the UI
-  language (`en`/`fr`) in a "General" expandable section; more sections
-  (profile, account, plan…) will be added over time. The choice is stored
-  on the account (`PATCH /api/users/me`) so it follows the user across
-  devices; before sign-in, a language selector on the sign-in page keeps
-  the choice in memory and applies it to the account at first sign-in.
+- **`settings`** shows account-wide preferences. Today the "General"
+  expandable section holds the learned language (`en`/`fr`/`es`/`sv`,
+  applied server-side via `PATCH /api/users/me/learning-language`) and the
+  UI language. Switching the learned language changes which chapters and
+  knowledge the app shows; the daily chapter quota is shared across all
+  languages. The UI language (`en`/`fr`) is also stored on the account
+  (`PATCH /api/users/me`); before sign-in, the sign-in page's selector
+  keeps the choice in memory and applies it at first sign-in.
 - **Language resolution**: an account preference always wins; otherwise
   the pre-sign-in choice; otherwise the device language (French devices
   get French, everything else English).
