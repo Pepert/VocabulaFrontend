@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as WebBrowser from 'expo-web-browser';
+import { useTranslation } from 'react-i18next';
 import { COGNITO, logoutUrl } from '../config';
 import { clearSession } from '../auth';
 import { getChapters, ApiError, type StoryChapter } from '../api';
@@ -11,6 +12,7 @@ import { colors, spacing, typography } from '../theme';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [chapters, setChapters] = useState<StoryChapter[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -58,39 +60,34 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Your story</Text>
+      <Text style={styles.title}>{t('home.title')}</Text>
 
       {error ? (
-        <Text style={styles.error}>Could not load your chapters: {error}</Text>
+        <Text style={styles.error}>{t('home.loadError', { error })}</Text>
       ) : chapters === null ? (
         <ActivityIndicator color={colors.blue} />
       ) : chapters.length === 0 ? (
         <Card style={styles.card}>
-          <Text style={styles.cardTitle}>A story awaits 📖</Text>
-          <Text style={styles.cardText}>
-            Photograph a page of your notebook, and the first chapter of your story writes itself
-            with the words you are learning.
-          </Text>
+          <Text style={styles.cardTitle}>{t('home.emptyTitle')}</Text>
+          <Text style={styles.cardText}>{t('home.emptyText')}</Text>
         </Card>
       ) : (
         <Card style={styles.card}>
-          <Text style={styles.cardTitle}>{chapters.length > 0 && `Chapter ${chapters.length}`}</Text>
+          <Text style={styles.cardTitle}>{t('home.chapter', { count: chapters.length })}</Text>
           <Text style={styles.cardText}>
-            {chapters.length === 1
-              ? 'One chapter written so far. New pages keep the story going.'
-              : `${chapters.length} chapters written so far. New pages keep the story going.`}
+            {chapters.length === 1 ? t('home.oneChapter') : t('home.manyChapters', { count: chapters.length })}
           </Text>
         </Card>
       )}
 
       <View style={styles.actions}>
         <PrimaryButton
-          title="Add resources"
+          title={t('home.addResources')}
           disabled={chapters === null}
           onPress={() => router.push('/capture')}
         />
         <PrimaryButton
-          title="Chapters"
+          title={t('home.chapters')}
           variant="blue"
           disabled={!chapters || chapters.length === 0}
           onPress={() => router.push('/chapters')}
@@ -98,7 +95,13 @@ export default function HomeScreen() {
       </View>
 
       <View style={[styles.footer, { marginBottom: insets.bottom + spacing.m }]}>
-        <PrimaryButton title="Sign out" variant="ghost" onPress={signOut} />
+        <PrimaryButton
+          title={t('home.settings')}
+          variant="ghost"
+          onPress={() => router.push('/settings')}
+          style={styles.settingsButton}
+        />
+        <PrimaryButton title={t('home.signOut')} variant="ghost" onPress={signOut} />
       </View>
     </View>
   );
@@ -137,6 +140,11 @@ const styles = StyleSheet.create({
   footer: {
     position: 'absolute',
     bottom: spacing.xxl,
+    flexDirection: 'row',
+    gap: spacing.s,
+  },
+  settingsButton: {
+    minHeight: 48,
   },
   error: {
     ...typography.bodyMuted,

@@ -49,6 +49,20 @@ Keep the terminal running `npx expo start` (or the `run:ios` session):
   logout endpoint, so the next sign-in shows the provider selection again
 - The access token expires after 1 hour; the refresh token lasts 5 days
 
+## Translations (en / fr)
+
+All user-facing strings live in `src/i18n/en.ts` and `src/i18n/fr.ts`
+(react-i18next; `en` is the source of truth and `fr` is typed against it,
+so a missing key is a compile error). To add or change a string:
+
+1. Add it to `en.ts` (use `{{variable}}` for interpolation)
+2. Add the matching key to `fr.ts` — TypeScript will refuse to compile
+   until both sides match
+3. Use it in a screen with `const { t } = useTranslation()`
+
+`src/__tests__/i18n.test.ts` also asserts that both dictionaries carry
+exactly the same keys, so a drifted key fails CI.
+
 ## Troubleshooting
 
 - **"No code signing certificates are available to use"** — open

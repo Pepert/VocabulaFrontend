@@ -1,11 +1,13 @@
 import { exchangeCodeAsync, makeRedirectUri, useAutoDiscovery, useAuthRequest } from 'expo-auth-session';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { COGNITO } from '../config';
 import { loadSession, saveSession } from '../auth';
 import PrimaryButton from '../components/PrimaryButton';
-import { colors, spacing, typography } from '../theme';
+import { useLanguage } from '../i18n/useLanguage';
+import { colors, fontFamily, radius, spacing, typography } from '../theme';
 
 /**
  * Deep link Cognito redirects to after sign-in. In development builds this
@@ -18,6 +20,8 @@ function useRedirectUri(): string {
 
 export default function SignInScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
+  const { language, setLanguage } = useLanguage();
   const discovery = useAutoDiscovery(COGNITO.issuer);
   const redirectUri = useRedirectUri();
   const [request, result, promptAsync] = useAuthRequest(
@@ -81,13 +85,30 @@ export default function SignInScreen() {
         <Text style={styles.badgeText}>V</Text>
       </View>
       <Text style={styles.title}>Vocabula</Text>
-      <Text style={styles.subtitle}>Your story, written with the words you are learning.</Text>
+      <Text style={styles.subtitle}>{t('signin.tagline')}</Text>
+
+      {/* Language can be chosen before signing in; the choice becomes the
+          account's default if the account has none yet. */}
+      <View style={styles.languageRow}>
+        {(["en", "fr"] as const).map((code) => (
+          <Pressable
+            key={code}
+            onPress={() => setLanguage(code)}
+            style={[styles.languageOption, language === code && styles.languageOptionSelected]}
+          >
+            <Text style={[styles.languageLabel, language === code && styles.languageLabelSelected]}>
+              {code === 'en' ? t('settings.languageEnglish') : t('settings.languageFrench')}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+
       <View style={styles.button}>
         {busy ? (
           <ActivityIndicator color={colors.green} />
         ) : (
           <PrimaryButton
-            title="Sign in"
+            title={t('signin.signin')}
             disabled={!request}
             onPress={async () => {
               setError(null);
@@ -101,7 +122,9 @@ export default function SignInScreen() {
               // of spinning forever.
               if (outcome.type === 'error') {
                 setError(
-                  outcome.params?.error_description ?? outcome.params?.error ?? 'Unknown error'
+                  outcome.params?.error_description ??
+                    outcome.params?.error ??
+                    t('signin.unknownError')
                 );
               }
               setBusy(false);
@@ -109,7 +132,9 @@ export default function SignInScreen() {
           />
         )}
       </View>
-      {error && <Text style={styles.error}>Sign-in failed: {error}</Text>}
+      {error && (
+        <Text style={styles.error}>{t('signin.signinFailed', { error })}</Text>
+      )}
     </View>
   );
 }
@@ -146,6 +171,30 @@ const styles = StyleSheet.create({
     ...typography.bodyMuted,
     textAlign: 'center',
     maxWidth: 260,
+  },
+  languageRow: {
+    flexDirection: 'row',
+    marginTop: spacing.xs,
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderRadius: radius.pill,
+    padding: 2,
+  },
+  languageOption: {
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.m,
+    borderRadius: radius.pill,
+  },
+  languageOptionSelected: {
+    backgroundColor: colors.surfaceTint,
+  },
+  languageLabel: {
+    ...fontFamily(700),
+    fontSize: 14,
+    color: colors.text,
+  },
+  languageLabelSelected: {
+    color: colors.green,
   },
   button: {
     marginTop: spacing.xl,

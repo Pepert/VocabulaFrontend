@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { getChapters, ApiError, type NewWordDefinition, type StoryChapter } from '../../api';
 import { splitChapterByNewWords } from '../../lib/chapterSegments';
 import PrimaryButton from '../../components/PrimaryButton';
@@ -11,6 +12,7 @@ import { colors, fontFamily, radius, spacing, typography } from '../../theme';
 export default function ChapterScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { number } = useLocalSearchParams<{ number: string }>();
   const chapterNumber = Number(number);
   // undefined = still loading, null = chapter not found.
@@ -42,7 +44,7 @@ export default function ChapterScreen() {
   if (chapter === null) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.muted}>Chapter {number} not found.</Text>
+        <Text style={styles.muted}>{t('chapter.notFound', { number })}</Text>
       </View>
     );
   }
@@ -52,10 +54,10 @@ export default function ChapterScreen() {
   return (
     <>
       <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.s }]}>
-        <PrimaryButton title="‹ Chapters" variant="ghost" onPress={() => router.back()} />
+        <PrimaryButton title={t('chapter.back')} variant="ghost" onPress={() => router.back()} />
 
         <View style={styles.pill}>
-          <Text style={styles.pillText}>Chapter {chapter.chapterNumber}</Text>
+          <Text style={styles.pillText}>{t('chapter.pill', { number: chapter.chapterNumber })}</Text>
         </View>
 
         <Text style={styles.title}>{chapter.title ?? chapter.storyTitle}</Text>
@@ -87,9 +89,9 @@ export default function ChapterScreen() {
           <View style={styles.sheet}>
             <Text style={styles.sheetWord}>{selectedWord?.word}</Text>
             <Text style={styles.sheetDefinition}>
-              {selectedWord?.definition ?? 'No definition available yet — it may appear in a future chapter.'}
+              {selectedWord?.definition ?? t('chapter.noDefinition')}
             </Text>
-            <PrimaryButton title="Close" variant="ghost" onPress={() => setSelectedWord(null)} />
+            <PrimaryButton title={t('chapter.close')} variant="ghost" onPress={() => setSelectedWord(null)} />
           </View>
         </Pressable>
       </Modal>

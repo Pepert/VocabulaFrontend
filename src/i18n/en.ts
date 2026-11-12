@@ -1,0 +1,63 @@
+/** English — source of truth for the translation keys. */
+const en = {
+  common: {
+    home: 'Home',
+  },
+  signin: {
+    tagline: 'Your story, written with the words you are learning.',
+    signin: 'Sign in',
+    signinFailed: 'Sign-in failed: {{error}}',
+    unknownError: 'Unknown error',
+  },
+  home: {
+    title: 'Your story',
+    emptyTitle: 'A story awaits 📖',
+    emptyText:
+      'Photograph a page of your notebook, and the first chapter of your story writes itself with the words you are learning.',
+    chapter: 'Chapter {{count}}',
+    oneChapter: 'One chapter written so far. New pages keep the story going.',
+    manyChapters: '{{count}} chapters written so far. New pages keep the story going.',
+    addResources: 'Add resources',
+    chapters: 'Chapters',
+    settings: 'Settings',
+    signOut: 'Sign out',
+    loadError: 'Could not load your chapters: {{error}}',
+  },
+  capture: {
+    title: 'Add learning material',
+    description:
+      'Photograph a notebook page; the next chapter of your story uses what it finds.',
+    takePhoto: 'Take a photo',
+    chooseFromLibrary: 'Choose from library',
+    cameraPermission:
+      'Camera access is needed to photograph your material. You can enable it in Settings → Privacy & Security → Camera.',
+    preparingOne: 'Preparing photo…',
+    preparingMany: 'Preparing {{count}} photos…',
+    readingOne: 'Reading your notebook…',
+    writing: 'Writing your next chapter…',
+    opening: 'Opening your chapter…',
+    errorTitle: 'Something went wrong',
+    tryAgain: 'Try again',
+  },
+  chapters: {
+    title: 'Your chapters',
+    empty: 'No chapters yet. Add learning material from home to write your first one.',
+  },
+  chapter: {
+    back: '‹ Chapters',
+    pill: 'Chapter {{number}}',
+    notFound: 'Chapter {{number}} not found.',
+    close: 'Close',
+    noDefinition: 'No definition available yet — it may appear in a future chapter.',
+  },
+  settings: {
+    title: 'Settings',
+    general: 'General',
+    language: 'Language',
+    languageEnglish: 'English',
+    languageFrench: 'Français',
+    languageHint: 'Applies to the whole app, on all your devices.',
+  },
+};
+
+export default en;

@@ -195,3 +195,24 @@ export async function generateChapter(knowledge: NotebookKnowledge): Promise<Gen
 export async function getChapters(): Promise<{ chapters: StoryChapter[] }> {
   return apiJson<{ chapters: StoryChapter[] }>('/api/stories/chapters');
 }
+
+/** The authenticated user's account record. */
+export type CurrentUser = {
+  userId: string;
+  /** UI language preference; null = follow the device language. */
+  language?: string | null;
+};
+
+/** Current account, including the UI language preference. */
+export async function getUser(): Promise<CurrentUser> {
+  return apiJson<CurrentUser>('/api/users/me');
+}
+
+/** Update the language stored on the account ("en" or "fr"). */
+export async function updateUserLanguage(language: string): Promise<CurrentUser> {
+  return apiJson<CurrentUser>('/api/users/me', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ language }),
+  });
+}

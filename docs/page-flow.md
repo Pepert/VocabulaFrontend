@@ -1,14 +1,15 @@
 # Page flow
 
-The app has five routes (Expo Router - each file under `src/app/` is a route):
+The app has six routes (Expo Router - each file under `src/app/` is a route):
 
 ```mermaid
 flowchart TD
-    A["index<br/>Sign in — only when there is no session"] -- "session restored" --> B["home<br/>Add resources · Chapters · Sign out"]
+    A["index<br/>Sign in — only when there is no session"] -- "session restored" --> B["home<br/>Add resources · Chapters · Settings · Sign out"]
     B -- "Add resources" --> C["capture<br/>camera or library, 1-10 photos"]
     B -- "Chapters" --> D["chapters<br/>all chapters, back to home"]
     D -- "tap a chapter" --> E["chapter/[number]<br/>one chapter, back to the list"]
     C -- "chapter generated" --> E
+    B -- "Settings" --> F["settings<br/>language preference, back to home"]
     B -- "sign out" --> A
 ```
 
@@ -29,6 +30,15 @@ flowchart TD
 - **`chapter/[number]`** shows a single chapter. Its back button returns to
   the chapters list. There is deliberately no "add more material" from here:
   new material is added from home or capture only.
+- **`settings`** shows account-wide preferences. Today it holds the UI
+  language (`en`/`fr`) in a "General" expandable section; more sections
+  (profile, account, plan…) will be added over time. The choice is stored
+  on the account (`PATCH /api/users/me`) so it follows the user across
+  devices; before sign-in, a language selector on the sign-in page keeps
+  the choice in memory and applies it to the account at first sign-in.
+- **Language resolution**: an account preference always wins; otherwise
+  the pre-sign-in choice; otherwise the device language (French devices
+  get French, everything else English).
 
 ## Future planned flows
 

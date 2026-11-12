@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { extractKnowledge, generateChapter, ApiError } from '../api';
@@ -19,6 +20,7 @@ type Phase =
 export default function CaptureScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const [phase, setPhase] = useState<Phase>({ step: 'pick' });
 
   const addMaterial = async (source: 'camera' | 'library') => {
@@ -30,9 +32,7 @@ export default function CaptureScreen() {
         if (!permission.granted) {
           setPhase({
             step: 'error',
-            message:
-              'Camera access is needed to photograph your material. ' +
-              'You can enable it in Settings → Privacy & Security → Camera.',
+            message: t('capture.cameraPermission'),
           });
           return;
         }
@@ -60,8 +60,8 @@ export default function CaptureScreen() {
         step: 'working',
         label:
           pickedImages.length === 1
-            ? 'Preparing photo…'
-            : `Preparing ${pickedImages.length} photos…`,
+            ? t('capture.preparingOne')
+            : t('capture.preparingMany', { count: pickedImages.length }),
       });
       const prepared = await Promise.all(
         pickedImages.map((asset) =>
@@ -72,24 +72,18 @@ export default function CaptureScreen() {
         )
       );
 
-      setPhase({
-        step: 'working',
-        label:
-          pickedImages.length === 1
-            ? 'Reading your notebook…'
-            : `Reading ${pickedImages.length} notebook pages…`,
-      });
+      setPhase({ step: 'working', label: t('capture.readingOne') });
       const knowledge = await extractKnowledge(
         prepared.map((p) => p.uri),
         'image/jpeg'
       );
 
-      setPhase({ step: 'working', label: 'Writing your next chapter…' });
+      setPhase({ step: 'working', label: t('capture.writing') });
       const generate = await generateChapter(knowledge);
 
       // The response carries the new chapter's number, so no re-fetch of
       // the chapter list is needed to redirect to it.
-      setPhase({ step: 'working', label: 'Opening your chapter…' });
+      setPhase({ step: 'working', label: t('capture.opening') });
       router.replace(`/chapter/${generate.chapterNumber}`);
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) {
@@ -105,7 +99,7 @@ export default function CaptureScreen() {
     <View style={styles.container}>
       {phase.step !== 'working' && (
         <PrimaryButton
-          title="‹ Home"
+          title={`‹ ${t('common.home')}`}
           variant="ghost"
           onPress={() => router.back()}
           style={[styles.back, { marginTop: insets.top + spacing.s }]}
@@ -114,14 +108,12 @@ export default function CaptureScreen() {
 
       {phase.step === 'pick' && (
         <View style={styles.centered}>
-          <Text style={styles.title}>Add learning material</Text>
-          <Text style={styles.muted}>
-            Photograph a notebook page; the next chapter of your story uses what it finds.
-          </Text>
+          <Text style={styles.title}>{t('capture.title')}</Text>
+          <Text style={styles.muted}>{t('capture.description')}</Text>
           <View style={styles.buttons}>
-            <PrimaryButton title="Take a photo" onPress={() => addMaterial('camera')} />
+            <PrimaryButton title={t('capture.takePhoto')} onPress={() => addMaterial('camera')} />
             <PrimaryButton
-              title="Choose from library"
+              title={t('capture.chooseFromLibrary')}
               variant="ghost"
               onPress={() => addMaterial('library')}
             />
@@ -138,10 +130,10 @@ export default function CaptureScreen() {
 
       {phase.step === 'error' && (
         <View style={styles.centered}>
-          <Text style={styles.errorTitle}>Something went wrong</Text>
+          <Text style={styles.errorTitle}>{t('capture.errorTitle')}</Text>
           <Text style={styles.errorText}>{phase.message}</Text>
           <View style={styles.buttons}>
-            <PrimaryButton title="Try again" onPress={() => setPhase({ step: 'pick' })} />
+            <PrimaryButton title={t('capture.tryAgain')} onPress={() => setPhase({ step: 'pick' })} />
           </View>
         </View>
       )}
