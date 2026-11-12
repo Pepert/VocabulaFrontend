@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { getChapters, ApiError, type StoryChapter } from '../api';
 import PrimaryButton from '../components/PrimaryButton';
 import { colors, spacing, typography } from '../theme';
@@ -9,6 +10,7 @@ import { colors, spacing, typography } from '../theme';
 export default function ChaptersScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t, i18n } = useTranslation();
   const [chapters, setChapters] = useState<StoryChapter[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +30,7 @@ export default function ChaptersScreen() {
   if (error) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.error}>Could not load your chapters: {error}</Text>
+        <Text style={styles.error}>{t('home.loadError', { error })}</Text>
       </View>
     );
   }
@@ -49,14 +51,12 @@ export default function ChaptersScreen() {
       keyExtractor={(chapter) => String(chapter.chapterNumber)}
       ListHeaderComponent={
         <View style={styles.header}>
-          <PrimaryButton title="‹ Home" variant="ghost" onPress={() => router.back()} />
-          <Text style={styles.title}>Your chapters</Text>
+          <PrimaryButton title={`‹ ${t('common.home')}`} variant="ghost" onPress={() => router.back()} />
+          <Text style={styles.title}>{t('chapters.title')}</Text>
         </View>
       }
       ListEmptyComponent={
-        <Text style={styles.muted}>
-          No chapters yet. Add learning material from home to write your first one.
-        </Text>
+        <Text style={styles.muted}>{t('chapters.empty')}</Text>
       }
       renderItem={({ item }) => (
         <Pressable
@@ -65,9 +65,11 @@ export default function ChaptersScreen() {
         >
           <View style={styles.rowText}>
             <Text style={styles.chapterTitle}>
-              Chapter {item.chapterNumber} · {item.title ?? item.storyTitle}
+              {t('chapter.pill', { number: item.chapterNumber })} · {item.title ?? item.storyTitle}
             </Text>
-            <Text style={styles.muted}>{new Date(item.createdAt).toLocaleDateString()}</Text>
+            <Text style={styles.muted}>
+              {new Date(item.createdAt).toLocaleDateString(i18n.language === 'fr' ? 'fr-FR' : 'en-GB')}
+            </Text>
           </View>
           <Text style={styles.chevron}>›</Text>
         </Pressable>

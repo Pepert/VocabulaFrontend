@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+// Initializes i18next (side effect) before any screen renders.
+import '../i18n';
 import {
   Nunito_400Regular,
   Nunito_700Bold,

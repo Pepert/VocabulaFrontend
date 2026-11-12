@@ -64,6 +64,10 @@ the root layout before any screen renders.
   `green` (primary), `blue` (secondary emphasis), `ghost` (outlined,
   for navigation/back), `locked` (disabled), `danger`.
 - `Card` - the content surface, also from the same file.
+- Settings (`src/app/settings.tsx`) - expandable section header
+  ("General", open by default) with white option cards; the language
+  options use a green radio dot for the active one. The sign-in page
+  uses compact pill buttons for its EN/FR language selector.
 - New-word spans (`src/lib/chapterSegments.ts` + the reading page) -
   words worth noticing render in colour, no underline (modern flat look),
   and tapping one opens a small definition sheet (word + meaning).

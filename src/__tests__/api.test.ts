@@ -5,7 +5,7 @@ import {
   loadSession,
   saveSession,
 } from '../auth';
-import { apiFetch, ApiError, extractKnowledge, generateChapter, getChapters } from '../api';
+import { apiFetch, ApiError, extractKnowledge, generateChapter, getChapters, getUser, updateUserLanguage } from '../api';
 
 jest.mock('expo-secure-store', () => ({
   __esModule: true,
@@ -200,5 +200,36 @@ describe('getChapters', () => {
 
     await expect(getChapters()).rejects.toThrow('Come back tomorrow.');
     await expect(getChapters()).rejects.toHaveProperty('status', 429);
+  });
+});
+
+describe('users', () => {
+  it('getUser returns the account with its language preference', async () => {
+    await saveSession({ accessToken: 'token' });
+    (expoFetch as jest.Mock).mockResolvedValue(
+      okResponse({ userId: '63b8f3e2-0000-4000-8000-000000000001', language: 'fr' })
+    );
+
+    const user = await getUser();
+
+    expect(user.language).toBe('fr');
+    const [url, init] = (expoFetch as jest.Mock).mock.calls[0];
+    expect(url).toContain('/api/users/me');
+    expect(init.headers.Authorization).toBe('Bearer token');
+  });
+
+  it('updateUserLanguage PATCHes the language to the account', async () => {
+    await saveSession({ accessToken: 'token' });
+    (expoFetch as jest.Mock).mockResolvedValue(
+      okResponse({ userId: '63b8f3e2-0000-4000-8000-000000000001', language: 'en' })
+    );
+
+    const user = await updateUserLanguage('en');
+
+    expect(user.language).toBe('en');
+    const [url, init] = (expoFetch as jest.Mock).mock.calls[0];
+    expect(url).toContain('/api/users/me');
+    expect(init.method).toBe('PATCH');
+    expect(JSON.parse(init.body)).toEqual({ language: 'en' });
   });
 });
