@@ -48,9 +48,16 @@ export default function SettingsScreen() {
     updateLearningLanguage(choice).catch(() => undefined);
   };
 
+  const learningLabelKeys: Record<LearningLanguageCode, string> = {
+    en: 'settings.learningEnglish',
+    fr: 'settings.learningFrench',
+    es: 'settings.learningSpanish',
+    sv: 'settings.learningSwedish',
+  };
+
   const learningRows: { code: LearningLanguageCode; label: string }[] = LearningLanguageCodes.map((code) => ({
     code,
-    label: t(`settings.learning${code.charAt(0).toUpperCase()}${code.slice(1)}`),
+    label: t(learningLabelKeys[code]),
   }));
 
   const uiRows: { language: AppLanguage; label: string }[] = [

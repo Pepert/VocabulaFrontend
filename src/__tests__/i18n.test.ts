@@ -75,4 +75,22 @@ describe('i18next', () => {
     (fr.chapter as unknown as { close: string }).close = '';
     expect(i18next.t('chapter.close', { lng: 'fr' })).toBe('Close');
   });
+
+  it('every learning language has a real translated name in both languages', () => {
+    // Regression guard: a wrong key (e.g. settings.learningEn) renders the
+    // raw key on screen instead of a name.
+    const labelKeys: Record<string, string> = {
+      en: 'settings.learningEnglish',
+      fr: 'settings.learningFrench',
+      es: 'settings.learningSpanish',
+      sv: 'settings.learningSwedish',
+    };
+    for (const key of Object.values(labelKeys)) {
+      for (const lng of ['en', 'fr'] as const) {
+        const translated = i18next.t(key, { lng });
+        expect(translated).not.toBe(key);
+        expect(translated.length).toBeGreaterThan(0);
+      }
+    }
+  });
 });
