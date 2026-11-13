@@ -35,7 +35,14 @@ const fr: typeof en = {
     description:
       'Photographiez une page de votre carnet ; le prochain chapitre de votre histoire utilise ce qu’il y trouve.',
     takePhoto: 'Prendre une photo',
+    takeAnotherPhoto: 'Prendre une autre photo',
     chooseFromLibrary: 'Choisir dans la photothèque',
+    addFromLibrary: 'Ajouter depuis la photothèque',
+    reviewTitle: 'Vos pages',
+    reviewHint: 'Votre prochain chapitre s’écrit à partir de ces pages.',
+    photoCount: '{{count}} sur {{max}} photos',
+    useThese: 'Utiliser ces photos',
+    remove: 'Retirer',
     cameraPermission:
       'L’accès à la caméra est nécessaire pour photographier votre matériel. Vous pouvez l’activer dans Réglages → Confidentialité et sécurité → Caméra.',
     preparingOne: 'Préparation de la photo…',

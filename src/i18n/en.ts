@@ -32,7 +32,14 @@ const en = {
     description:
       'Photograph a notebook page; the next chapter of your story uses what it finds.',
     takePhoto: 'Take a photo',
+    takeAnotherPhoto: 'Take another photo',
     chooseFromLibrary: 'Choose from library',
+    addFromLibrary: 'Add from library',
+    reviewTitle: 'Your pages',
+    reviewHint: 'Your next chapter is written from these pages.',
+    photoCount: '{{count}} of {{max}} photos',
+    useThese: 'Use these pictures',
+    remove: 'Remove',
     cameraPermission:
       'Camera access is needed to photograph your material. You can enable it in Settings → Privacy & Security → Camera.',
     preparingOne: 'Preparing photo…',
