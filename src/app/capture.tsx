@@ -192,10 +192,10 @@ export default function CaptureScreen() {
       )}
 
       {phase.step === 'working' && (
-        <>
+        <View style={styles.centered}>
           <ActivityIndicator color={colors.green} />
           <Text style={styles.muted}>{phase.label}</Text>
-        </>
+        </View>
       )}
 
       {phase.step === 'error' && (
