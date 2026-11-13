@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import i18n, { getPreSigninChoice, setPreSigninChoice, type AppLanguage } from '.';
 import { getUser, updateUserLanguage } from '../api';
 import { loadSession } from '../auth';
+import { storeLanguage } from './storage';
 
 /**
  * The UI language and the plumbing that keeps it in sync with the user's
@@ -36,6 +37,7 @@ export function useLanguage(): {
             // The account already carries a preference: it always wins.
             void i18n.changeLanguage(user.language);
             setLanguageState(user.language as AppLanguage);
+            void storeLanguage(user.language as AppLanguage);
             return;
           }
 
@@ -59,6 +61,9 @@ export function useLanguage(): {
   const setLanguage = useCallback((next: AppLanguage) => {
     void i18n.changeLanguage(next);
     setLanguageState(next);
+    // Cache for the next cold start: the account stays the source of
+    // truth, but the app must not flash the device language first.
+    void storeLanguage(next);
 
     loadSession().then((session) => {
       if (session) {

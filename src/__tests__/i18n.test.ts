@@ -1,6 +1,8 @@
 import { getLocales } from 'expo-localization';
+import * as SecureStore from 'expo-secure-store';
 import en from '../i18n/en';
 import fr from '../i18n/fr';
+import { storeLanguage, loadStoredLanguage } from '../i18n/storage';
 import i18next, {
   deviceLanguage,
   defaultLanguage,
@@ -8,10 +10,39 @@ import i18next, {
   SupportedLanguages,
 } from '../i18n';
 
+jest.mock('expo-secure-store', () => ({
+  __esModule: true,
+  setItemAsync: jest.fn(),
+  getItemAsync: jest.fn(),
+}));
+
 jest.mock('expo-localization', () => ({
   __esModule: true,
   getLocales: jest.fn(() => []),
 }));
+
+describe('stored language (cold-start hint)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('round-trips a supported language through the keychain', async () => {
+    (SecureStore.getItemAsync as jest.Mock).mockResolvedValue('fr');
+    await expect(loadStoredLanguage()).resolves.toBe('fr');
+    expect(SecureStore.getItemAsync).toHaveBeenCalledWith('vocabula.ui-language');
+
+    await storeLanguage('en');
+    expect(SecureStore.setItemAsync).toHaveBeenCalledWith('vocabula.ui-language', 'en');
+  });
+
+  it('ignores unsupported or missing values', async () => {
+    (SecureStore.getItemAsync as jest.Mock).mockResolvedValue('sv');
+    await expect(loadStoredLanguage()).resolves.toBeNull();
+
+    (SecureStore.getItemAsync as jest.Mock).mockResolvedValue(null);
+    await expect(loadStoredLanguage()).resolves.toBeNull();
+  });
+});
 
 describe('deviceLanguage', () => {
   it('maps a French device to fr', () => {
