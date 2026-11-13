@@ -42,8 +42,10 @@ const fr: typeof en = {
       'Photographiez une page de votre carnet ; le prochain chapitre de votre histoire utilise ce qu’il y trouve.',
     takePhoto: 'Prendre une photo',
     takeAnotherPhoto: 'Prendre une autre photo',
-    chooseFromLibrary: 'Choisir dans la photothèque',
-    addFromLibrary: 'Ajouter depuis la photothèque',
+    // Short labels: long library wording wraps to two lines on small
+    // Android screens, while these mirror the "Prendre une photo" rhythm.
+    chooseFromLibrary: 'Choisir une photo',
+    addFromLibrary: 'Ajouter des photos',
     reviewTitle: 'Vos pages',
     reviewHint: 'Votre prochain chapitre s’écrit à partir de ces pages.',
     photoCount: '{{count}} sur {{max}} photos',

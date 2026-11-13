@@ -1,8 +1,9 @@
 # Local development
 
-How to run and develop the Vocabula app on a real iPhone from this machine.
+How to run and develop the Vocabula app on a real iPhone from this
+machine, and on Android (emulator or device) via Android Studio.
 
-## Prerequisites
+## Prerequisites (iOS)
 
 - Node 26+ and npm
 - Xcode (from the App Store) with your Apple ID added under
@@ -74,8 +75,35 @@ exactly the same keys, so a drifted key fails CI.
 - **Build succeeds but sign-in does nothing** — check that the backend
   (api.vocabula.dev) is up: `curl https://api.vocabula.dev/health`
 
-## Android (later)
+## Android
 
-The same code builds for Android via a cloud build (`eas build --profile
-development --platform android`) or locally with Android Studio. Nothing in
-this repo is iOS-specific.
+The same code builds for Android; the native `android/` folder is
+generated (and gitignored, like `ios/`), so start by regenerating it from
+the current `app.json`:
+
+```bash
+npx expo prebuild --platform android --clean
+```
+
+### One-time setup
+
+- **Android Studio** (developer.android.com) — the default install brings
+  the SDK and emulator images (~10 GB)
+- Open **More Actions → Virtual Device Manager**, create a Pixel-class
+  device with a recent Android version, and start it
+
+### Day-to-day loop
+
+```bash
+npm run android
+```
+
+picks the running emulator automatically; with a physical device over
+USB it works exactly like `expo run:ios --device` (enable **USB
+debugging** in the phone's developer options first).
+
+- The deep link (`vocabula://`) is registered in the generated manifest,
+  so the Cognito sign-in flow works the same as on iOS
+- Camera permission comes from the `expo-image-picker` library manifest,
+  merged at build time; the app requests it at first use, same as iOS
+- Hot reload, the developer menu and the test gate are identical to iOS
