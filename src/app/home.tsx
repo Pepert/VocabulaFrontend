@@ -18,12 +18,13 @@ export default function HomeScreen() {
   const [learningLanguage, setLearningLanguage] = useState<LearningLanguageCode | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
 
-  // Localized name of the learned language, in the UI language.
+  // Localized name of the learned language for the home sentence, in the
+  // UI language (French builds these into a "J'apprends ..." phrase).
   const learningNames: Record<LearningLanguageCode, string> = {
-    en: t('settings.learningEnglish'),
-    fr: t('settings.learningFrench'),
-    es: t('settings.learningSpanish'),
-    sv: t('settings.learningSwedish'),
+    en: t('home.learningEn'),
+    fr: t('home.learningFr'),
+    es: t('home.learningEs'),
+    sv: t('home.learningSv'),
   };
 
   // Refetch on every focus: coming back from the chapter generated for a

@@ -26,6 +26,12 @@ const fr: typeof en = {
     signOut: 'Se déconnecter',
     loadError: 'Impossible de charger vos chapitres : {{error}}',
     learning: 'J’apprends {{language}}',
+    // Names for the home sentence: articles and lowercase, unlike the
+    // capitalized labels used in the Settings rows.
+    learningEn: 'l’anglais',
+    learningFr: 'le français',
+    learningEs: 'l’espagnol',
+    learningSv: 'le suédois',
     chooseLanguageTitle: 'Quelle langue apprenez-vous ?',
     chooseLanguageText: 'Choisissez-la ci-dessous, et votre histoire commence.',
     chooseLanguage: 'Choisir une langue',
@@ -35,7 +41,14 @@ const fr: typeof en = {
     description:
       'Photographiez une page de votre carnet ; le prochain chapitre de votre histoire utilise ce qu’il y trouve.',
     takePhoto: 'Prendre une photo',
+    takeAnotherPhoto: 'Prendre une autre photo',
     chooseFromLibrary: 'Choisir dans la photothèque',
+    addFromLibrary: 'Ajouter depuis la photothèque',
+    reviewTitle: 'Vos pages',
+    reviewHint: 'Votre prochain chapitre s’écrit à partir de ces pages.',
+    photoCount: '{{count}} sur {{max}} photos',
+    useThese: 'Utiliser ces photos',
+    remove: 'Retirer',
     cameraPermission:
       'L’accès à la caméra est nécessaire pour photographier votre matériel. Vous pouvez l’activer dans Réglages → Confidentialité et sécurité → Caméra.',
     preparingOne: 'Préparation de la photo…',

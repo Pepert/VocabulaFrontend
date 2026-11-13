@@ -24,10 +24,16 @@ flowchart TD
   the actions are replaced by a single "Choose a language" button to
   Settings, since the backend refuses extraction without a choice. API
   tokens are cleared before routing to `index` on session expiry.
-- **`capture`** handles the whole extraction/generation flow with progress
-  states, and has a back button to home while picking. On success it
-  redirects to the freshly generated chapter page (the last chapter
-  number) - the chapter is never displayed on the capture screen itself.
+- **`capture`** handles the flow in two steps. Picking (camera, one shot at
+  a time, or library, up to 10) lands on a review screen: the selection is
+  shown as thumbnails that can be removed individually, with "take another
+  photo" and "add from library" while below the 10-photo cap. Only the
+  "Use these pictures" confirmation starts the upload - extraction and
+  generation progress states unchanged, with a back button to home while
+  picking or reviewing. On success it redirects to the freshly generated
+  chapter page (the last chapter number) - the chapter is never displayed
+  on the capture screen itself. After a failed upload the review is
+  restored, so the session's picks are not lost.
 - **`chapters`** lists every chapter in reading order. Each row opens the
   chapter page; the screen has a back button to home.
 - **`chapter/[number]`** shows a single chapter. Its back button returns to

@@ -71,6 +71,12 @@ the root layout before any screen renders.
   buttons for its EN/FR language selector. Home shows the active learned
   language under the title, and replaces the action buttons with a
   single "Choose a language" card-button until one is picked.
+- Capture review (`src/app/capture.tsx` + `src/lib/photoSelection.ts`) -
+  a "Your pages" step between picking and uploading: thumbnails with a red
+  × badge for removal, a bold "3 of 10 photos" counter, and the standard
+  primary/ghost button stack (confirm in green, secondary picks in ghost).
+  The selection rules (dedupe by uri, order, 10-photo cap) live in the
+  pure `photoSelection` module, tested without rendering the screen.
 - New-word spans (`src/lib/chapterSegments.ts` + the reading page) -
   words worth noticing render in colour, no underline (modern flat look),
   and tapping one opens a small definition sheet (word + meaning).
