@@ -106,4 +106,6 @@ debugging** in the phone's developer options first).
   so the Cognito sign-in flow works the same as on iOS
 - Camera permission comes from the `expo-image-picker` library manifest,
   merged at build time; the app requests it at first use, same as iOS
+- The Expo template injects a microphone permission the app never uses;
+  `blockedPermissions` in `app.json` strips it from the built manifest
 - Hot reload, the developer menu and the test gate are identical to iOS
