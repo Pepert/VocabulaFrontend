@@ -49,6 +49,8 @@ const fr: typeof en = {
     reviewTitle: 'Vos pages',
     reviewHint: 'Votre prochain chapitre s’écrit à partir de ces pages.',
     photoCount: '{{count}} sur {{max}} photos',
+    photosIgnored_one: 'Une photo n’a pas été ajoutée — la limite est de 10 photos.',
+    photosIgnored_other: '{{count}} photos n’ont pas été ajoutées — la limite est de 10 photos.',
     useThese: 'Utiliser ces photos',
     remove: 'Retirer',
     cameraPermission:

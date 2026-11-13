@@ -30,6 +30,7 @@ export default function CaptureScreen() {
   const { t } = useTranslation();
   const [phase, setPhase] = useState<Phase>({ step: 'pick' });
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
+  const [ignoredCount, setIgnoredCount] = useState(0);
 
   const pickMore = async (source: 'camera' | 'library') => {
     try {
@@ -65,7 +66,9 @@ export default function CaptureScreen() {
       const pickedUris = result.assets
         .slice(0, MaxImagesPerUpload)
         .map((asset) => asset.uri);
-      setPhotos((current) => addPhotos(current, pickedUris, MaxImagesPerUpload));
+      const { photos: merged, dropped } = addPhotos(photos, pickedUris, MaxImagesPerUpload);
+      setPhotos(merged);
+      setIgnoredCount(dropped);
       setPhase({ step: 'review' });
     } catch (e) {
       const message = e instanceof ApiError ? `${e.status}: ${e.message}` : String(e);
@@ -155,6 +158,11 @@ export default function CaptureScreen() {
           <Text style={styles.counter}>
             {t('capture.photoCount', { count: photos.length, max: MaxImagesPerUpload })}
           </Text>
+          {ignoredCount > 0 && (
+            <Text style={styles.notice}>
+              {t('capture.photosIgnored', { count: ignoredCount })}
+            </Text>
+          )}
 
           <View style={styles.grid}>
             {photos.map((photo) => (
@@ -236,6 +244,10 @@ const styles = StyleSheet.create({
   counter: {
     ...typography.bodyMuted,
     ...fontFamily(700),
+  },
+  notice: {
+    ...typography.bodyMuted,
+    color: colors.textMuted,
   },
   grid: {
     flexDirection: 'row',

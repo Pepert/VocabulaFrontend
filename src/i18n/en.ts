@@ -44,6 +44,8 @@ const en = {
     reviewTitle: 'Your pages',
     reviewHint: 'Your next chapter is written from these pages.',
     photoCount: '{{count}} of {{max}} photos',
+    photosIgnored_one: 'One photo was not added — the limit is 10 photos.',
+    photosIgnored_other: '{{count}} photos were not added — the limit is 10 photos.',
     useThese: 'Use these pictures',
     remove: 'Remove',
     cameraPermission:
