@@ -68,7 +68,9 @@ the root layout before any screen renders.
   ("General", open by default) with white option cards; the learned
   language and the UI language each form a group of option rows, and the
   active one uses a green radio dot. The sign-in page uses compact pill
-  buttons for its EN/FR language selector. Home shows the active learned
+  buttons for its EN/FR language selector. The sign-in page follows the
+  charter too: tint background, hero (badge, title, tagline, language
+  pills) on a floating white card, full-width primary action below. Home shows the active learned
   language under the title, and replaces the action buttons with a
   single "Choose a language" card-button until one is picked.
 - Capture review (`src/app/capture.tsx` + `src/lib/photoSelection.ts`) -

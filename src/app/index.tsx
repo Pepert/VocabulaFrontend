@@ -7,7 +7,7 @@ import { COGNITO } from '../config';
 import { loadSession, saveSession } from '../auth';
 import { updateUserLanguage } from '../api';
 import { getPreSigninChoice } from '../i18n';
-import PrimaryButton from '../components/PrimaryButton';
+import PrimaryButton, { Card } from '../components/PrimaryButton';
 import { useLanguage } from '../i18n/useLanguage';
 import { colors, fontFamily, radius, spacing, typography } from '../theme';
 
@@ -90,27 +90,30 @@ export default function SignInScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.badge}>
-        <Text style={styles.badgeText}>V</Text>
-      </View>
-      <Text style={styles.title}>Vocabula</Text>
-      <Text style={styles.subtitle}>{t('signin.tagline')}</Text>
+      {/* Hero on a floating card, like every other screen's content. */}
+      <Card style={styles.card}>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>V</Text>
+        </View>
+        <Text style={styles.title}>Vocabula</Text>
+        <Text style={styles.subtitle}>{t('signin.tagline')}</Text>
 
-      {/* Language can be chosen before signing in; the choice becomes the
-          account's default if the account has none yet. */}
-      <View style={styles.languageRow}>
-        {(["en", "fr"] as const).map((code) => (
-          <Pressable
-            key={code}
-            onPress={() => setLanguage(code)}
-            style={[styles.languageOption, language === code && styles.languageOptionSelected]}
-          >
-            <Text style={[styles.languageLabel, language === code && styles.languageLabelSelected]}>
-              {code === 'en' ? t('settings.languageEnglish') : t('settings.languageFrench')}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
+        {/* Language can be chosen before signing in; the choice becomes the
+            account's default if the account has none yet. */}
+        <View style={styles.languageRow}>
+          {(["en", "fr"] as const).map((code) => (
+            <Pressable
+              key={code}
+              onPress={() => setLanguage(code)}
+              style={[styles.languageOption, language === code && styles.languageOptionSelected]}
+            >
+              <Text style={[styles.languageLabel, language === code && styles.languageLabelSelected]}>
+                {code === 'en' ? t('settings.languageEnglish') : t('settings.languageFrench')}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      </Card>
 
       <View style={styles.button}>
         {busy ? (
@@ -151,11 +154,17 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surfaceTint,
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing.l,
     gap: spacing.s,
+  },
+  card: {
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 360,
+    paddingVertical: spacing.xl,
   },
   badge: {
     width: 96,
@@ -183,7 +192,7 @@ const styles = StyleSheet.create({
   },
   languageRow: {
     flexDirection: 'row',
-    marginTop: spacing.xs,
+    marginTop: spacing.m,
     borderWidth: 2,
     borderColor: colors.border,
     borderRadius: radius.pill,
@@ -206,8 +215,9 @@ const styles = StyleSheet.create({
     color: colors.green,
   },
   button: {
-    marginTop: spacing.xl,
-    width: 260,
+    marginTop: spacing.m,
+    width: '100%',
+    maxWidth: 360,
   },
   error: {
     ...typography.bodyMuted,
