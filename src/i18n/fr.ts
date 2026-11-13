@@ -26,6 +26,12 @@ const fr: typeof en = {
     signOut: 'Se déconnecter',
     loadError: 'Impossible de charger vos chapitres : {{error}}',
     learning: 'J’apprends {{language}}',
+    // Names for the home sentence: articles and lowercase, unlike the
+    // capitalized labels used in the Settings rows.
+    learningEn: 'l’anglais',
+    learningFr: 'le français',
+    learningEs: 'l’espagnol',
+    learningSv: 'le suédois',
     chooseLanguageTitle: 'Quelle langue apprenez-vous ?',
     chooseLanguageText: 'Choisissez-la ci-dessous, et votre histoire commence.',
     chooseLanguage: 'Choisir une langue',

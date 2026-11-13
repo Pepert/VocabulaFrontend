@@ -23,6 +23,12 @@ const en = {
     signOut: 'Sign out',
     loadError: 'Could not load your chapters: {{error}}',
     learning: 'Learning {{language}}',
+    // Names for the home sentence; French needs articles and lowercase,
+    // which would look wrong in the Settings rows.
+    learningEn: 'English',
+    learningFr: 'French',
+    learningEs: 'Spanish',
+    learningSv: 'Swedish',
     chooseLanguageTitle: 'Which language are you learning?',
     chooseLanguageText: 'Pick it below, and your story starts there.',
     chooseLanguage: 'Choose a language',

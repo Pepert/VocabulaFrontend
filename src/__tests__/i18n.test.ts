@@ -84,6 +84,12 @@ describe('i18next', () => {
       fr: 'settings.learningFrench',
       es: 'settings.learningSpanish',
       sv: 'settings.learningSwedish',
+      // The home sentence uses its own names (French needs articles:
+      // "J'apprends l'anglais" vs the Settings row "Anglais").
+      homeEn: 'home.learningEn',
+      homeFr: 'home.learningFr',
+      homeEs: 'home.learningEs',
+      homeSv: 'home.learningSv',
     };
     for (const key of Object.values(labelKeys)) {
       for (const lng of ['en', 'fr'] as const) {
