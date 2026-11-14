@@ -40,6 +40,12 @@
       "expo-font",
       "expo-splash-screen",
       "expo-localization"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b1d9750a-6005-4b0b-900f-dce7695494d7"
+      }
+    },
+    "owner": "leo_peronnet"
   }
 }
