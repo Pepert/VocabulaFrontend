@@ -109,3 +109,9 @@ debugging** in the phone's developer options first).
 - The Expo template injects a microphone permission the app never uses;
   `blockedPermissions` in `app.json` strips it from the built manifest
 - Hot reload, the developer menu and the test gate are identical to iOS
+
+## Release and store builds
+
+Cloud builds (CI, and the store pipeline once the accounts exist) are
+described in [`store-delivery.md`](store-delivery.md); the eas.json
+profiles build the exact repository state rather than a machine's setup.
