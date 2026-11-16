@@ -5,7 +5,7 @@ import {
   loadSession,
   saveSession,
 } from '../auth';
-import { apiFetch, ApiError, extractKnowledge, generateChapter, getChapters, getUser, updateLearningLanguage, updateUserLanguage } from '../api';
+import { apiFetch, ApiError, deleteAccount, extractKnowledge, generateChapter, getChapters, getUser, updateLearningLanguage, updateUserLanguage } from '../api';
 
 jest.mock('expo-secure-store', () => ({
   __esModule: true,
@@ -264,5 +264,38 @@ describe('users', () => {
     expect(url).toContain('/api/users/me/learning-language');
     expect(init.method).toBe('PATCH');
     expect(JSON.parse(init.body)).toEqual({ learningLanguage: 'sv' });
+  });
+});
+
+describe('deleteAccount', () => {
+  it('sends DELETE /api/users/me and resolves on 204', async () => {
+    await saveSession({ accessToken: 'token' });
+    const noContent = { ok: true, status: 204, json: () => Promise.resolve({}) } as Response;
+    (expoFetch as jest.Mock).mockResolvedValue(noContent);
+
+    await expect(deleteAccount()).resolves.toBeUndefined();
+
+    const [url, init] = (expoFetch as jest.Mock).mock.calls[0];
+    expect(url).toContain('/api/users/me');
+    expect(init.method).toBe('DELETE');
+  });
+
+  it('surfaces the problem detail and keeps the session on failure', async () => {
+    await saveSession({ accessToken: 'token', refreshToken: 'refresh' });
+    (expoFetch as jest.Mock).mockResolvedValue(
+      okResponse(
+        { title: 'Account deletion failed', detail: 'The identity could not be deleted; no data has been removed. Try again later.' },
+        503
+      )
+    );
+
+    await expect(deleteAccount()).rejects.toMatchObject({
+      status: 503,
+      message: 'The identity could not be deleted; no data has been removed. Try again later.',
+    });
+
+    // Nothing was deleted: the session must still be there for a retry.
+    const session = await loadSession();
+    expect(session?.accessToken).toBe('token');
   });
 });

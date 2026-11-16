@@ -1,10 +1,11 @@
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../components/PrimaryButton';
-import { updateLearningLanguage, getUser, LearningLanguageCodes, type LearningLanguageCode } from '../api';
+import { updateLearningLanguage, getUser, deleteAccount, LearningLanguageCodes, type LearningLanguageCode } from '../api';
+import { clearSession } from '../auth';
 import { type AppLanguage } from '../i18n';
 import { useLanguage } from '../i18n/useLanguage';
 import { colors, fontFamily, radius, spacing, typography } from '../theme';
@@ -48,6 +49,25 @@ export default function SettingsScreen() {
     updateLearningLanguage(choice).catch(() => undefined);
   };
 
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  // The API deletes the identity before any data, so a failure leaves the
+  // account intact - the modal simply reports and lets the user retry.
+  const confirmDelete = async () => {
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteAccount();
+      await clearSession();
+      router.replace('/');
+    } catch {
+      setDeleteError(t('settings.deleteError'));
+      setDeleting(false);
+    }
+  };
+
   const learningLabelKeys: Record<LearningLanguageCode, string> = {
     en: 'settings.learningEnglish',
     fr: 'settings.learningFrench',
@@ -67,6 +87,7 @@ export default function SettingsScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + spacing.s }]}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       <PrimaryButton title={`‹ ${t('common.home')}`} variant="ghost" onPress={() => router.back()} />
       <Text style={styles.title}>{t('settings.title')}</Text>
 
@@ -109,6 +130,52 @@ export default function SettingsScreen() {
           )}
         </View>
       )}
+
+      <Text style={[styles.sectionLabel, styles.dangerGap]}>{t('settings.dangerZone')}</Text>
+      <View style={[styles.section, styles.dangerSection]}>
+        <Text style={styles.sectionHint}>{t('settings.deleteHint')}</Text>
+        <PrimaryButton
+          title={t('settings.deleteAccount')}
+          variant="danger"
+          onPress={() => {
+            setDeleteError(null);
+            setConfirmingDelete(true);
+          }}
+        />
+      </View>
+
+      </ScrollView>
+
+      <Modal
+        visible={confirmingDelete}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          if (!deleting) {
+            setConfirmingDelete(false);
+          }
+        }}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>{t('settings.deleteConfirmTitle')}</Text>
+            <Text style={styles.sectionHint}>{t('settings.deleteConfirmBody')}</Text>
+            {deleteError !== null && <Text style={styles.modalError}>{deleteError}</Text>}
+            <PrimaryButton
+              title={deleting ? t('settings.deleteWorking') : t('settings.deleteAccount')}
+              variant="danger"
+              disabled={deleting}
+              onPress={confirmDelete}
+            />
+            <PrimaryButton
+              title={t('settings.cancel')}
+              variant="ghost"
+              disabled={deleting}
+              onPress={() => setConfirmingDelete(false)}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -131,6 +198,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.surfaceTint,
     padding: spacing.l,
+  },
+  // Everything scrolls: an open General section plus the danger zone no
+  // longer fits on small screens (e.g. iPhone SE).
+  scrollContent: {
+    paddingBottom: spacing.l,
   },
   title: {
     ...typography.h1,
@@ -205,5 +277,37 @@ const styles = StyleSheet.create({
   radioSelected: {
     borderColor: colors.green,
     backgroundColor: colors.green,
+  },
+  dangerGap: {
+    marginTop: spacing.xl,
+    color: colors.red,
+  },
+  dangerSection: {
+    borderColor: colors.red,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.l,
+  },
+  modalCard: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: colors.white,
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderRadius: radius.l,
+    padding: spacing.l,
+    gap: spacing.m,
+  },
+  modalTitle: {
+    ...typography.h2,
+    fontSize: 17,
+  },
+  modalError: {
+    ...typography.bodyMuted,
+    color: colors.red,
   },
 });

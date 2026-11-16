@@ -82,6 +82,14 @@ const en = {
     learningFrench: 'French',
     learningSpanish: 'Spanish',
     learningSwedish: 'Swedish',
+    dangerZone: 'Danger zone',
+    deleteAccount: 'Delete my account',
+    deleteHint: 'Permanently deletes your account, every learned language, every word and every chapter. This cannot be undone.',
+    deleteConfirmTitle: 'Delete your account?',
+    deleteConfirmBody: 'Your account and all your stories will be permanently deleted. There is no way to recover them.',
+    deleteWorking: 'Deleting…',
+    deleteError: 'Deletion failed. Nothing has been deleted; try again later.',
+    cancel: 'Cancel',
   },
 };
 
