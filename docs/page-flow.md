@@ -47,6 +47,12 @@ flowchart TD
   languages. The UI language (`en`/`fr`) is also stored on the account
   (`PATCH /api/users/me`); before sign-in, the sign-in page's selector
   keeps the choice in memory and applies it at first sign-in.
+- A "Danger zone" at the bottom of `settings` offers account deletion
+  (`DELETE /api/users/me`): a confirmation dialog spells out that the
+  account, every language, word and chapter is permanently deleted. The
+  backend deletes the Cognito identity before any data, so a failed
+  deletion always leaves the account intact. After a successful deletion
+  the local session is cleared and the app lands on the sign-in screen.
 - **Language resolution**: an account preference always wins; otherwise
   the pre-sign-in choice; otherwise the device language (French devices
   get French, everything else English).

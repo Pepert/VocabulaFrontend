@@ -88,6 +88,14 @@ const fr: typeof en = {
     learningFrench: 'Français',
     learningSpanish: 'Espagnol',
     learningSwedish: 'Suédois',
+    dangerZone: 'Zone sensible',
+    deleteAccount: 'Supprimer mon compte',
+    deleteHint: 'Supprime définitivement votre compte, toutes les langues apprises, tous les mots et tous les chapitres. Action irréversible.',
+    deleteConfirmTitle: 'Supprimer votre compte ?',
+    deleteConfirmBody: 'Votre compte et toutes vos histoires seront définitivement supprimés. Aucune récupération ne sera possible.',
+    deleteWorking: 'Suppression…',
+    deleteError: 'La suppression a échoué. Rien n’a été supprimé ; réessayez plus tard.',
+    cancel: 'Annuler',
   },
 };
 

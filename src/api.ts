@@ -234,3 +234,24 @@ export async function updateLearningLanguage(learningLanguage: LearningLanguageC
     body: JSON.stringify({ learningLanguage }),
   });
 }
+
+/**
+ * Permanently delete the account: the sign-in identity, and with it every
+ * learned language, stored word and generated chapter. Resolves only once
+ * the server confirms the deletion; clearing the local session is up to the
+ * caller. On failure nothing has been deleted (the API deletes the identity
+ * before any data) and the rejection message carries why.
+ */
+export async function deleteAccount(): Promise<void> {
+  const response = await apiFetch('/api/users/me', { method: 'DELETE' });
+  if (!response.ok) {
+    let message = `HTTP ${response.status}`;
+    try {
+      const problem = (await response.json()) as { title?: string; detail?: string };
+      message = problem.detail ?? problem.title ?? message;
+    } catch {
+      // Not a JSON problem body; keep the generic message.
+    }
+    throw new ApiError(response.status, message);
+  }
+}
