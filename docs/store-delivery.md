@@ -34,6 +34,28 @@ profile - never by machine setup.
 First use on a machine: `npx eas login` (Expo account), then `npx eas
 init` once to bind this repo to an EAS project.
 
+## Store submission (TestFlight wired)
+
+The App Store Connect app record exists (App ID `6835070225`, created on
+the first submit). With the `submit.production` profile pinning
+`ascAppId`, a release is two commands, non-interactive:
+
+```bash
+EXPO_NO_CAPABILITY_SYNC=1 npx eas-cli build --profile production --platform ios
+npx eas-cli submit --platform ios --latest
+```
+
+`eas submit` runs with the App Store Connect API key (env vars
+`ASC_API_KEY_ID` / `ASC_API_KEY_ISSUER_ID` / `ASC_API_KEY_PATH`, or the
+EAS-generated key stored on Expo's servers). After Apple's processing
+(matter of minutes) the build appears in the app's TestFlight tab and is
+available to internal testers; external testers additionally require
+Beta App Review and the privacy-policy URL.
+
+Play submission is not wired yet: it needs the `aab` from the
+production profile plus the Play Console (identity validation pending)
+and an upload track choice.
+
 ## iOS credentials (managed by EAS)
 
 The Apple Developer Program membership is bound to the same Apple ID as
@@ -76,5 +98,6 @@ it reappears; the microphone stays blocked.
       sign-in is offered) - Cognito-side done and tested
 - [ ] Privacy declarations: App Store privacy label and Play data-safety
       form (email, notebook photos, generated content)
-- [ ] `submit` profiles in `eas.json` (App Store Connect / Play API keys)
+- [x] `submit` profile in `eas.json` (ASC app ID pinned; first build
+      already on TestFlight)
 - [ ] Store listings: screenshots, description, keywords (FR + EN)
