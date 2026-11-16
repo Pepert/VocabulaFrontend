@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -87,6 +87,7 @@ export default function SettingsScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + spacing.s }]}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       <PrimaryButton title={`‹ ${t('common.home')}`} variant="ghost" onPress={() => router.back()} />
       <Text style={styles.title}>{t('settings.title')}</Text>
 
@@ -143,6 +144,8 @@ export default function SettingsScreen() {
         />
       </View>
 
+      </ScrollView>
+
       <Modal
         visible={confirmingDelete}
         transparent
@@ -195,6 +198,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.surfaceTint,
     padding: spacing.l,
+  },
+  // Everything scrolls: an open General section plus the danger zone no
+  // longer fits on small screens (e.g. iPhone SE).
+  scrollContent: {
+    paddingBottom: spacing.l,
   },
   title: {
     ...typography.h1,
