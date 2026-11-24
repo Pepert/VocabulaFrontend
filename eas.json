@@ -28,6 +28,11 @@
       "ios": {
         "ascAppId": "6835070225"
       }
+    },
+    "closed-alpha": {
+      "android": {
+        "track": "alpha"
+      }
     }
   }
 }
