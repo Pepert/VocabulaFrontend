@@ -88,8 +88,26 @@ the root layout before any screen renders.
   `splitChapterByNewWords` is the pure helper that splits chapter text
   into renderable segments and carries the selected entry to the sheet.
 
+## Logo
+
+The mark is an **open book in two tones of green** — cover `#43A302`
+(`greenEdge`), pages `#58CC02` (`green`) — on the `surfaceTint` `#EFF7E6`
+background. Two sparkles carry the product's color code from the chapter
+reader: **green bottom-left** = vocabulary from the user's notebook,
+**blue top-right** = vocabulary introduced by the story (`#1CB0F6`).
+
+- Master artwork (1254x1254, background baked in):
+  `Resources/vocabula-design-tmp/Open Green Book with Sparkles.png`.
+- Derived assets in `assets/`: `icon.png` 1024 full-bleed (iOS/web source of
+  truth), `android-icon-foreground.png` 512 with the glyph inside the 66%
+  adaptive-icon safe circle on transparent, `android-icon-background.png`
+  512 solid `#EFF7E6` (matches `app.json` `adaptiveIcon.backgroundColor`),
+  `android-icon-monochrome.png` 432 single-color `#3C3C3C` for themed icons,
+  `favicon.png` 48, `splash-icon.png` 1024 transparent (wired through the
+  `expo-splash-screen` plugin in `app.json`: tint background, `imageWidth`
+  240, `contain`).
+
 ## Not yet decided (future)
 
 - Dark mode (tokens would need a second palette).
 - A mascot or illustrated empty states (needs artwork).
-- App icon and splash artwork (the current badge is a placeholder).
