@@ -28,17 +28,32 @@ Formats PNG/JPG/WEBP; 2 MB per API request (ours are tiny).
 | Text | primary / secondary | `#3C3C3C` / `#8F8F8F` |
 | Inputs | focus border | `#1CB0F6` |
 
-Font: Nunito if the editor offers a webfont picker, otherwise leave default.
-Editor field labels drift between console versions — if a label doesn't match,
-screenshot it before guessing.
+Font: **not supported** — the managed-login branding settings schema has no font
+component (components are: alert, favicon, form, idpButton, pageBackground,
+pageFooter, pageHeader, pageText, phoneNumberSelector, primaryButton,
+secondaryButton). The hosted page uses Cognito's own font stack; only the app
+itself renders Nunito. Editor field labels drift between console versions — if a
+label doesn't match, screenshot it before guessing.
 
 ## Current live state (verified via AWS CLI, read-only)
 
 - Pool `eu-west-3_ef1uEzee6` ("vocabula"), tier **ESSENTIALS** (branding editor available).
-- Domain `auth.vocabula.dev` ACTIVE, **ManagedLoginVersion: 1** (managed login already on).
-- App client `ln2cjlpn66bt33ll76ipssqdv` ("vocabula-app") — no branding style yet
-  (DescribeManagedLoginBrandingByClient -> ResourceNotFoundException), so the
-  sign-in page currently shows Cognito defaults.
+- Domain `auth.vocabula.dev` ACTIVE, **ManagedLoginVersion: 1 = CLASSIC hosted UI**
+  (per API docs, value **2** = managed login). So the live /login page currently
+  renders the CLASSIC UI and ignores managed-login styles — the branding version
+  must be switched to managed login first (see below).
+- App client `ln2cjlpn66bt33ll76ipssqdv` ("vocabula-app") now has a branding style
+  assigned (verified via DescribeManagedLoginBrandingByClient).
+
+## Step 0 — switch the domain to managed login (REQUIRED, prod change)
+
+Console: user pool -> Branding -> **Domain** -> `auth.vocabula.dev` -> Edit ->
+Branding version -> **Managed login** -> Save. Or CLI:
+`aws cognito-idp update-user-pool-domain --user-pool-id eu-west-3_ef1uEzee6 --domain auth.vocabula.dev --managed-login-version 2 --region eu-west-3`
+
+Caveats (official docs): switching branding version **invalidates existing user
+sessions** (everyone must sign in again) and can take **up to ~4 minutes** to
+propagate through the domain's CloudFront distribution.
 
 ## How to apply
 
