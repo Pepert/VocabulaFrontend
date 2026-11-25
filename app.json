@@ -5,11 +5,12 @@
     "scheme": "vocabula",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/branding/apple/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "dev.vocabula.app",
+      "appleTeamId": "H2C527AT5D",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -21,14 +22,14 @@
       ],
       "adaptiveIcon": {
         "backgroundColor": "#EFF7E6",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/branding/google/android-icon-foreground.png",
+        "backgroundImage": "./assets/branding/google/android-icon-background.png",
+        "monochromeImage": "./assets/branding/google/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/branding/apple/favicon.png"
     },
     "plugins": [
       "expo-secure-store",
@@ -45,7 +46,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#EFF7E6",
-          "image": "./assets/splash-icon.png",
+          "image": "./assets/branding/apple/splash-icon.png",
           "imageWidth": 240,
           "resizeMode": "contain"
         }

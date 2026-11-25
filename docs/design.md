@@ -98,14 +98,15 @@ reader: **green bottom-left** = vocabulary from the user's notebook,
 
 - Master artwork (1254x1254, background baked in):
   `Resources/vocabula-design-tmp/Open Green Book with Sparkles.png`.
-- Derived assets in `assets/`: `icon.png` 1024 full-bleed (iOS/web source of
-  truth), `android-icon-foreground.png` 512 with the glyph inside the 66%
-  adaptive-icon safe circle on transparent, `android-icon-background.png`
-  512 solid `#EFF7E6` (matches `app.json` `adaptiveIcon.backgroundColor`),
-  `android-icon-monochrome.png` 432 single-color `#3C3C3C` for themed icons,
-  `favicon.png` 48, `splash-icon.png` 1024 transparent (wired through the
+- Derived assets: `assets/branding/apple/icon.png` 1024 full-bleed (iOS/web
+  source of truth), `assets/branding/apple/favicon.png` 48,
+  `assets/branding/apple/splash-icon.png` 1024 transparent (wired through the
   `expo-splash-screen` plugin in `app.json`: tint background, `imageWidth`
-  240, `contain`).
+  240, `contain`), and `assets/branding/google/android-icon-{foreground,
+  background,monochrome}.png` for the Android adaptive icon (foreground has
+  the glyph inside the 66% safe circle on transparent; background is solid
+  `#EFF7E6`, matching `app.json` `adaptiveIcon.backgroundColor`; monochrome
+  is single-color `#3C3C3C` for themed icons).
 
 ## Not yet decided (future)
 

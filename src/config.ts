@@ -5,6 +5,8 @@
  * (see docs/architecture/aws-deployment.md there). The Cognito app client id
  * is a public identifier, not a secret; the access token it receives is.
  */
+import type { AppLanguage } from './i18n';
+
 export const API_URL = 'https://api.vocabula.dev';
 
 export const COGNITO = {
@@ -23,6 +25,15 @@ export const COGNITO = {
 /** Cognito logout URL: clears the hosted UI session in the system browser. */
 export function logoutUrl(): string {
   return `${COGNITO.hostedUiDomain}/logout?client_id=${COGNITO.clientId}&logout_uri=${encodeURIComponent(COGNITO.nativeCallback)}`;
+}
+
+/**
+ * Cognito managed login localizes its pages through the `lang` query
+ * parameter on the authorize URL (e.g. `&lang=fr`); it then persists the
+ * choice in a cookie. Maps the app's UI language to that extra parameter.
+ */
+export function cognitoLangExtraParams(language: AppLanguage): Record<string, string> {
+  return { lang: language };
 }
 
 /** Key used to persist the auth session in the device keychain. */

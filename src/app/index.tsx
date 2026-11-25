@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { COGNITO } from '../config';
+import { COGNITO, cognitoLangExtraParams } from '../config';
 import { loadSession, saveSession } from '../auth';
 import { updateUserLanguage } from '../api';
 import { getPreSigninChoice } from '../i18n';
@@ -33,6 +33,8 @@ export default function SignInScreen() {
       redirectUri,
       responseType: 'code',
       usePKCE: true,
+      // Localize the Cognito hosted page to the language picked above.
+      extraParams: cognitoLangExtraParams(language),
     },
     discovery
   );
