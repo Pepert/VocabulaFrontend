@@ -5,14 +5,15 @@ identity. Facts verified against docs.aws.amazon.com (2026-11-24, see bottom).
 Applying is a PROD change — the owner applies it (console or AWS CLI).
 No terraform drift: terraform manages pool/client/domain only, NOT branding.
 
-## Brand assets (drop the exported files here)
+## Brand assets (in `assets/branding/cognito/`)
 
-- `assets/branding/cognito/cognito-header-logo.png` — logo glyph on
-  TRANSPARENT background, 512x512 PNG (managed-login category `PAGE_HEADER_LOGO`).
-  Export from the master `Open Green Book with Sparkles.png`; do NOT bake the
-  `#EFF7E6` background in (page background is set via colors below).
-- `assets/branding/cognito/cognito-favicon.svg` — glyph as SVG, viewBox
-  `0 0 32 32` (category `FAVICON_SVG`; the API only allows ICO/SVG for favicons).
+- `vocabula-horizontal-lockup.svg` — wide lockup (glyph + wordmark) on
+  transparent background; upload as `PAGE_HEADER_LOGO` (the page header).
+- `cognito-header-logo.png` — square glyph on transparent, 512x512; currently
+  uploaded as `FORM_LOGO` (centered above the form). Prefer the lockup in the
+  header and keep this for the form if desired.
+- `cognito-favicon.svg` — glyph SVG, viewBox `0 0 32 32` (category
+  `FAVICON_SVG`; the API only allows ICO/SVG for favicons).
 
 Upload each asset with ColorMode **browser-adaptive** (one file for light+dark).
 Formats PNG/JPG/WEBP; 2 MB per API request (ours are tiny).
@@ -68,7 +69,7 @@ immediately. (To replace an existing style: delete it first, then create.)
 aws cognito-idp create-managed-login-branding \
   --user-pool-id eu-west-3_ef1uEzee6 --client-id ln2cjlpn66bt33ll76ipssqdv \
   --region eu-west-3 \
-  --assets fileb://assets/branding/cognito/cognito-header-logo.png,category=PAGE_HEADER_LOGO,colorMode=browser-adaptive \
+  --assets fileb://assets/branding/cognito/vocabula-horizontal-lockup.svg,category=PAGE_HEADER_LOGO,colorMode=browser-adaptive \
            fileb://assets/branding/cognito/cognito-favicon.svg,category=FAVICON_SVG,colorMode=browser-adaptive \
   --settings file://branding-settings.json
 ```
